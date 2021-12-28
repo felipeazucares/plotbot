@@ -7,3 +7,4 @@ backend/api/__pycache__/
 aitextgen/
 backend/api/.DS_Store
 .DS_Store
+backend/__ init __.py

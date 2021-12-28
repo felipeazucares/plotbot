@@ -12,22 +12,39 @@ Returns:
     ResponseModel: wrapper class containing response data
 """
 import os
-import fastapi
+from time import tzname
+from datetime import timedelta, datetime
+from pytz import timezone
+
+# import fastapi
 from treelib import Tree
 from fastapi import FastAPI, HTTPException, Body, Depends, Security, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from api.helpers import ConsoleDisplay
-from api.models import APIResponse, Payload
+from api.models import APIResponse, Payload, Token, TokenData, UserDetails
 from aitextgen import aitextgen
+from jose import JWTError, jwt
+import api.config
+from api.authentication import Authentication
+from passlib.context import CryptContext
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    SecurityScopes,
+)
 
 
+# set env vars & application constants
 app = FastAPI()
 VERSION = "0.1.0"
 NAME = "Plotbot"
-
-# get debug flag from env file
 DEBUG = bool(os.getenv("DEBUG", "False") == "True")
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
+timezone(tzname[0]).localize(datetime.now())
 # setup helper for formatting debug messages
 console_display = ConsoleDisplay()
 origins = ["http://localhost:9000", "localhost:9000"]
@@ -39,6 +56,116 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="login",
+    scopes={
+        "story:reader": "Read story details",
+        "story:writer": "write story details",
+    },
+)
+oauth = Authentication()
+
+# ----------------------------
+#     Authenticaton routines
+# ----------------------------
+
+
+@app.post("/login", response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    """main login route for oauth authentication flow - returns bearer token"""
+    user = await oauth.authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # creates a token for a given user with an expiry in minutes
+    access_token = oauth.create_access_token(
+        data={"sub": user.account_id, "scopes": form_data.scopes},
+        expires_delta=access_token_expires,
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+async def get_current_user_token(token: str = Depends(oauth2_scheme)):
+    """returns current user token for logout"""
+    return token
+
+
+@app.get("/logout")
+def logout(token: str = Depends(get_current_user_token)):
+    """logsout current user by add token to redis managed blacklist"""
+    if oauth.add_blacklist_token(token):
+        return ResponseModel(data={"Logout": True}, message="Success")
+
+
+async def get_current_user(
+    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
+):
+    """authenticate user and scope return user class"""
+    if security_scopes.scopes:
+        authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
+    else:
+        authenticate_value = "Bearer"
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        account_id: str = payload.get("sub")
+        if account_id is None:
+            raise credentials_exception
+        token_scopes = payload.get("scopes", [])
+        expires = payload.get("exp")
+        token_data = TokenData(
+            scopes=token_scopes, username=account_id, expires=expires
+        )
+    except (JWTError, ValidationError):
+        raise credentials_exception
+    user = await oauth.get_user_by_account_id(account_id=token_data.username)
+    if user is None:
+        raise credentials_exception
+    # check token expiration
+    if expires is None:
+        raise credentials_exception
+    if datetime.now(timezone("gmt")) > token_data.expires:
+        raise credentials_exception
+    # check if the token is blacklisted
+    if oauth.is_token_blacklisted(token):
+        raise credentials_exception
+    # if we have a valid user and the token is not expired get the scopes
+    token_data.scopes = list(set(token_data.scopes) & set(user.user_role.split(" ")))
+    if DEBUG:
+        console_display.show_debug_message(
+            message_to_show=f"requested scopes in token:{token_scopes}"
+        )
+        console_display.show_debug_message(
+            message_to_show=f"Required endpoint scopes:{security_scopes.scopes}"
+        )
+
+    for scope in security_scopes.scopes:
+        if scope not in token_data.scopes:
+            raise HTTPException(
+                status_code=403,
+                detail="Insufficient permissions to complete action",
+                headers={"WWW-Authenticate": authenticate_value},
+            )
+    return user
+
+
+async def get_current_active_user_account(
+    current_user: UserDetails = Security(get_current_user, scopes=["user:reader"])
+):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user.account_id
 
 
 # ------------------------
@@ -89,7 +216,8 @@ async def generate_text(request: Payload = Body(...)) -> APIResponse:
         print(exception_object)
         raise
 
-    # todo: we need to log in to be able to know which user a tree an story belongs now add the text to a tree
+    # todo: we need to log in to be able to know which user a tree an story belongs now add
+    # todo: the text to a tree
     # todo: if a tree doesn't already exist then create a new one and save it recording the id
 
     return APIResponse(data={"text": generated_text}, code=200, message="Success")
