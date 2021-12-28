@@ -89,6 +89,9 @@ async def generate_text(request: Payload = Body(...)) -> APIResponse:
         print(exception_object)
         raise
 
+    # todo: we need to log in to be able to know which user a tree an story belongs now add the text to a tree
+    # todo: if a tree doesn't already exist then create a new one and save it recording the id
+
     return APIResponse(data={"text": generated_text}, code=200, message="Success")
 
 
