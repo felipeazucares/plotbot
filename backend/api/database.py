@@ -197,43 +197,56 @@ class StoryStorage:
     #         self.tree_was_found = False
     #     return self.tree_was_found
 
-    async def list_all_saved_stories(self, user_id: str) -> dict:
-        """return a dict of all the saves in the story_collection for supplied user_id"""
+    async def list_all_story_saves(self, user_id: str) -> dict:
+        """return a list of all story documents for user_id
+
+        Args:
+            user_id (str): hashed salted user id string
+
+        Returns:
+            dict: containing ids of all saved documents
+        """
         self.user_id = user_id
         self.saves = []
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"list_all_saved_stories({self.user_id}) called"
+                message_to_show=f"list_all_story_saves({self.user_id}) called"
             )
         try:
             async for save in self.story_collection.find({"user_id": self.user_id}):
-                self.saves.append(saves_helper(save))
+                self.saves.append(save["_id"])
         except Exception as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occured reading all database saves to the database user_id {self.user_id}"
+                message_to_show=f"Exception occured returning list of all documents for user_id {self.user_id}"
             )
             print(exception_object)
             raise
         return self.saves
 
-    async def delete_all_saves(self, user_id: str) -> int:
-        """delete all the saved documents in the story_collection for supplied user_id"""
+    async def delete_all_story_saves(self, user_id: str) -> int:
+        """delete all the saved story documents for user_id
+
+        Args:
+            user_id (str): hashed salted user_id string
+
+        Returns:
+            int: count of documents deleted from database
+        """
         self.user_id = user_id
-        self.console_display = ConsoleDisplay()
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"delete_all_saves({self.user_id}) called"
+                message_to_show=f"delete_all_story_saves({self.user_id}) called"
             )
         try:
             self.delete_result = await self.story_collection.delete_many(
                 {"user_id": self.user_id}
             )
             # delete_result object contains a deleted_count & acknowledged properties
-        except Exception as e:
+        except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured deleting a save from the database user_id was: {self.user_id}"
             )
-            print(e)
+            print(exception_object)
             raise
         return self.delete_result.deleted_count
 
@@ -257,29 +270,28 @@ class StoryStorage:
     #         raise
     #     return self.save_count
 
-    async def return_latest_save(self, user_id: str) -> dict:
+    async def return_latest_story_save(self, user_id: str) -> dict:
         """return the latest save document from the story_collection for supplied user_id"""
         self.user_id = user_id
-        self.console_display = ConsoleDisplay()
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"return_latest_save({self.user_id}) called"
+                message_to_show=f"return_latest_story_save({self.user_id}) called"
             )
         try:
             self.last_save = await self.story_collection.find_one(
                 {"user_id": self.user_id}, sort=[("date_time", -1)]
             )
 
-        except Exception as e:
+        except Exception as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
+                message_to_show=f"Exception occured retrieving latest save for user_id: {self.user_id}"
             )
-            print(e)
+            print(exception_object)
             raise
         if self.last_save is None:
             return None
         else:
-            return saves_helper(self.last_save)
+            return Story(last_save)
 
     # async def return_latest_save_for_project(self, user_id: str, project_id) -> object:
     #     """Returns the latest save document filtered by user and project ids
