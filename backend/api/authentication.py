@@ -17,12 +17,12 @@ from pytz import timezone
 from passlib.context import CryptContext
 from api.helpers import ConsoleDisplay
 from fastapi import HTTPException, status
-
-# import api.database as database
+import api.database as database
 
 REDISHOST = os.getenv(key="REDISHOST")
 REDISPORT = os.getenv(key="REDISPORT")
 REDISPASSWORD = os.getenv(key="REDISPASSWORD")
+USER_COLLECTION_NAME = os.getenv(key="USER_COLLECTION_NAME")
 timezone(tzname[0]).localize(datetime.now())
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -35,7 +35,7 @@ class Authentication:
         self.SECRET_KEY = os.getenv("SECRET_KEY")
         self.ALGORITHM = os.getenv("ALGORITHM")
         self.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
-        self.user_storage = database.UserStorage(collection_name="user_collection")
+        self.user_storage = database.UserStorage()
         self.console_display = ConsoleDisplay()
 
     def verify_password(self, plain_password, hashed_password):
@@ -48,11 +48,9 @@ class Authentication:
         """returns the details for a given userid"""
         return await self.user_storage.get_user_details_by_username(username=username)
 
-    async def get_user_by_account_id(self, account_id: str):
-        """returns the details for a given account_id"""
-        return await self.user_storage.get_user_details_by_account_id(
-            account_id=account_id
-        )
+    async def get_user_by_user_id(self, user_id: str):
+        """returns the details for a given user_id"""
+        return await self.user_storage.get_user_details_by_user_id(user_id=user_id)
 
     async def authenticate_user(self, username: str, password: str):
         """passed a db of users & username and input password, verifies password - returns user"""
@@ -98,11 +96,11 @@ class Authentication:
 
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-            account_id: str = payload.get("sub")
+            user_id: str = payload.get("sub")
             token_scopes = payload.get("scopes", [])
             expires = payload.get("exp")
             token_data = TokenData(
-                scopes=token_scopes, username=account_id, expires=expires
+                scopes=token_scopes, username=user_id, expires=expires
             )
         except ExpiredSignatureError:
             raise credentials_exception

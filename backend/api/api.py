@@ -15,12 +15,18 @@ import os
 from time import tzname
 from datetime import timedelta, datetime
 from pytz import timezone
+from pydantic.error_wrappers import ValidationError
 
 # import fastapi
 from treelib import Tree
 from fastapi import FastAPI, HTTPException, Body, Depends, Security, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    SecurityScopes,
+)
 from api.helpers import ConsoleDisplay
 from api.models import APIResponse, Payload, Token, TokenData, UserDetails
 from aitextgen import aitextgen
@@ -28,11 +34,6 @@ from jose import JWTError, jwt
 import api.config
 from api.authentication import Authentication
 from passlib.context import CryptContext
-from fastapi.security import (
-    OAuth2PasswordBearer,
-    OAuth2PasswordRequestForm,
-    SecurityScopes,
-)
 
 
 # set env vars & application constants
@@ -85,7 +86,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     # creates a token for a given user with an expiry in minutes
     access_token = oauth.create_access_token(
-        data={"sub": user.account_id, "scopes": form_data.scopes},
+        data={"sub": user.user_id, "scopes": form_data.scopes},
         expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -119,17 +120,15 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        account_id: str = payload.get("sub")
-        if account_id is None:
+        user_id: str = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
         expires = payload.get("exp")
-        token_data = TokenData(
-            scopes=token_scopes, username=account_id, expires=expires
-        )
+        token_data = TokenData(scopes=token_scopes, username=user_id, expires=expires)
     except (JWTError, ValidationError):
         raise credentials_exception
-    user = await oauth.get_user_by_account_id(account_id=token_data.username)
+    user = await oauth.get_user_by_user_id(user_id=token_data.username)
     if user is None:
         raise credentials_exception
     # check token expiration
@@ -165,7 +164,7 @@ async def get_current_active_user_account(
 ):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user.account_id
+    return current_user.user_id
 
 
 # ------------------------
@@ -174,18 +173,32 @@ async def get_current_active_user_account(
 
 
 @app.get("/")
-async def get() -> dict:
-    """Return the API version"""
+async def get(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
+) -> APIResponse:
+    """Returns current version of API and user details
+
+    Args:
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
+
+    Returns:
+        APIResponse: object containing API details and current user
+    """
     return APIResponse(
-        data={"version": VERSION, "name": NAME}, code=200, message="Success"
+        data={"version": VERSION, "name": NAME, "user": current_user},
+        code=200,
+        message="Success",
     )
 
 
 @app.post("/")
-async def generate_text(request: Payload = Body(...)) -> APIResponse:
+async def generate_text(
+    get_current_user, scopes=["story:reader"], request: Payload = Body(...)
+) -> APIResponse:
     """generate a text snippet from a given prompt
 
     Args:
+        current_user (UserDetails, optional): logged in user details.
         request (Payload, optional): Payload model containing prompt and temperature settings.
         Defaults to Body(...).
 
@@ -193,7 +206,7 @@ async def generate_text(request: Payload = Body(...)) -> APIResponse:
         HTTPException: for an errored response from the generator model
 
     Returns:
-        ResponseModel: data doict contains the generated text
+        APIResponse: data attribute contains the generated text or an error
     """
 
     if DEBUG:

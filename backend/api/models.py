@@ -99,7 +99,7 @@ class Name(BaseModel):
     """
 
     firstname: str
-    secondname: str
+    surname: str
 
 
 class UserDetails(BaseModel):
@@ -112,7 +112,7 @@ class UserDetails(BaseModel):
     name: Name  # use nested model definition
     username: str
     password: str  # hashed password
-    userid: Optional[str] = None
+    user_id: Optional[str] = None
     email: EmailStr
     user_role: str
     disabled: Optional[bool] = False
@@ -123,7 +123,7 @@ class UserDetails(BaseModel):
                 "name": {"firstname": "Alexei", "surname": "Guinness"},
                 "username": "a_dummy_user",
                 "password": "us3Th3F0rceLuk3",
-                "userid": "308fdfae-ca09-11eb-b437-f01898e87167",
+                "user_id": "308fdfae-ca09-11eb-b437-f01898e87167",
                 "email": "ben@kenobi.com",
                 "disabled": False,
                 "user_role": "story:reader,story:writer",
