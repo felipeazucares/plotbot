@@ -26,7 +26,7 @@ console_display = ConsoleDisplay()
 class UserStorage:
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
-        self.database = self.client.fabulator
+        self.database = self.client.plotbot
         self.user_collection = self.database.get_collection(USER_COLLECTION_NAME)
         self.console_display = ConsoleDisplay()
 
@@ -44,7 +44,6 @@ class UserStorage:
             )
             if user_deets is not None:
                 self.user_details = UserDetails(**user_deets)
-
             else:
                 self.user_details = None
         except Exception as exception_object:

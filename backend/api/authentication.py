@@ -3,8 +3,6 @@
 Raises:
     credentials_exception: when credentials are incorrect or expired
 
-Returns:
-    [type]: [description]
 """
 import os
 from time import tzname
@@ -18,6 +16,7 @@ from passlib.context import CryptContext
 from api.helpers import ConsoleDisplay
 from fastapi import HTTPException, status
 import api.database as database
+from api.models import TokenData
 
 REDISHOST = os.getenv(key="REDISHOST")
 REDISPORT = os.getenv(key="REDISPORT")

@@ -15,12 +15,10 @@ import os
 from time import tzname
 from datetime import timedelta, datetime
 from pytz import timezone
-from pydantic.error_wrappers import ValidationError
 
 # import fastapi
 from treelib import Tree
 from fastapi import FastAPI, HTTPException, Body, Depends, Security, status
-from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import (
     OAuth2PasswordBearer,
@@ -74,8 +72,20 @@ oauth = Authentication()
 
 
 @app.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    """main login route for oauth authentication flow - returns bearer token"""
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+) -> dict:
+    """handle oauth login procedure
+
+    Args:
+        form_data (OAuth2PasswordRequestForm, optional): requestform with username & password. Defaults to Depends().
+
+    Raises:
+        HTTPException: raised when user is not found in user collection
+
+    Returns:
+        access_token dict
+    """
     user = await oauth.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -92,22 +102,50 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-async def get_current_user_token(token: str = Depends(oauth2_scheme)):
-    """returns current user token for logout"""
+async def get_current_user_token(
+    token: str = Depends(oauth2_scheme),
+) -> str:
+    """returns current_user access token
+
+    Args:
+        token (str, optional): dict - access_token and token_type. Defaults to Depends(oauth2_scheme).
+
+    Returns:
+        token: dict containing access_token and token_type
+    """
     return token
 
 
 @app.get("/logout")
-def logout(token: str = Depends(get_current_user_token)):
-    """logsout current user by add token to redis managed blacklist"""
+async def logout(token: str = Depends(get_current_user_token)) -> APIResponse:
+    """handles oauth logout
+
+    Args:
+        token (str, optional): dict - access_token and token_type. Defaults to Depends(get_current_user_token).
+
+    Returns:
+        APIResponse: data property contains successful logout message
+    """
     if oauth.add_blacklist_token(token):
-        return ResponseModel(data={"Logout": True}, message="Success")
+        return APIResponse(data={"Logout": True}, code=200, message="Success")
 
 
 async def get_current_user(
     security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
-):
-    """authenticate user and scope return user class"""
+) -> UserDetails:
+    """get the current logged in user details
+
+    Args:
+        security_scopes (SecurityScopes): string containing valid scopes
+        token (str, optional):  dict - access_token and token_type. Defaults to Depends(oauth2_scheme).
+
+    Raises:
+        credentials_exception: raised if the token is invalid, expired or blacklisted
+        HTTPException: raised if user scopes do not match those requested
+
+    Returns:
+        User: object containing user's details
+    """
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
@@ -119,6 +157,7 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        print(f"token{token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
@@ -127,7 +166,7 @@ async def get_current_user(
         expires = payload.get("exp")
         token_data = TokenData(scopes=token_scopes, username=user_id, expires=expires)
     except (JWTError, ValidationError):
-        raise credentials_exception
+        raise
     user = await oauth.get_user_by_user_id(user_id=token_data.username)
     if user is None:
         raise credentials_exception
@@ -160,8 +199,19 @@ async def get_current_user(
 
 
 async def get_current_active_user_account(
-    current_user: UserDetails = Security(get_current_user, scopes=["user:reader"])
-):
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
+) -> str:
+    """return user_id for current (logged in) user (hashed salted string)
+
+    Args:
+        current_user (UserDetails, optional): user details object for current user. Defaults to Security(get_current_user, scopes=["story:reader"]).
+
+    Raises:
+        HTTPException: raises 400 if user is inactive
+
+    Returns:
+        str: user_id
+    """
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user.user_id
@@ -182,10 +232,10 @@ async def get(
         current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
 
     Returns:
-        APIResponse: object containing API details and current user
+        APIResponse: object containing API details
     """
     return APIResponse(
-        data={"version": VERSION, "name": NAME, "user": current_user},
+        data={"version": VERSION, "name": NAME, "user": current_user.username},
         code=200,
         message="Success",
     )
@@ -193,7 +243,8 @@ async def get(
 
 @app.post("/")
 async def generate_text(
-    get_current_user, scopes=["story:reader"], request: Payload = Body(...)
+    current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
+    request: Payload = Body(...),
 ) -> APIResponse:
     """generate a text snippet from a given prompt
 
@@ -229,11 +280,14 @@ async def generate_text(
         print(exception_object)
         raise
 
-    # todo: we need to log in to be able to know which user a tree an story belongs now add
     # todo: the text to a tree
     # todo: if a tree doesn't already exist then create a new one and save it recording the id
 
-    return APIResponse(data={"text": generated_text}, code=200, message="Success")
+    return APIResponse(
+        data={"text": generated_text, "username": current_user.username},
+        code=200,
+        message="Success",
+    )
 
 
 # generate a node in a tree with a call to aitextgen witha  given prompt

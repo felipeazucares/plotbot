@@ -112,7 +112,7 @@ class UserDetails(BaseModel):
     name: Name  # use nested model definition
     username: str
     password: str  # hashed password
-    user_id: Optional[str] = None
+    user_id: str
     email: EmailStr
     user_role: str
     disabled: Optional[bool] = False
