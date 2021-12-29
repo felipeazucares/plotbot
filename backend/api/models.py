@@ -36,6 +36,8 @@ class Payload(BaseModel):
     temperature: float
 
     class Config:
+        """example object for docs"""
+
         schema_extra = {
             "example": {
                 "prompt": "Hayden dumped his bag at the foot of the stairs and ran up them two at a time. He was so excited to be home that he could hardly contain himself.",
@@ -76,13 +78,17 @@ class TokenData(BaseModel):
 # -------------------------------------
 #   Classes for story storage
 # -------------------------------------
-class StoryTree:
+class Story(BaseModel):
     """Wrapper class for storing tree objects in mongo as a dictionary"""
 
-    def __init__(self, userid: str, tree: Tree):
-        self.account_id = account_id
-        self.tree = tree
-        self.date_time = datetime.utcnow()
+    class Config:
+        """required by Pydantic so we can include Tree objects in model"""
+
+        arbitrary_types_allowed = True
+
+    user_id: str
+    tree = Tree
+    date_time = datetime.utcnow()
 
 
 # -------------------------------------
@@ -118,6 +124,8 @@ class UserDetails(BaseModel):
     disabled: Optional[bool] = False
 
     class Config:
+        """example object for docs"""
+
         schema_extra = {
             "example": {
                 "name": {"firstname": "Alexei", "surname": "Guinness"},

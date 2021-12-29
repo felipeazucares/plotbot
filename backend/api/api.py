@@ -25,13 +25,14 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
-from api.helpers import ConsoleDisplay
-from api.models import APIResponse, Payload, Token, TokenData, UserDetails
 from aitextgen import aitextgen
 from jose import JWTError, jwt
-import api.config
-from api.authentication import Authentication
 from passlib.context import CryptContext
+from api.helpers import ConsoleDisplay
+from api.models import APIResponse, Payload, Token, TokenData, UserDetails
+from api.authentication import Authentication
+from api.database import add_text_to_story_tree
+import api.config
 
 
 # set env vars & application constants
@@ -265,6 +266,10 @@ async def generate_text(
             message_to_show=f"generate_text({request}) called"
         )
     try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"generating text snippet"
+            )
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,
@@ -273,6 +278,19 @@ async def generate_text(
             repetition_penalty=1,
             num_beams=1,
         )
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured generating text."
+        )
+        print(exception_object)
+        raise
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"writing text to mongodb story tree"
+            )
+
     except Exception as exception_object:
         console_display.show_exception_message(
             message_to_show="Error occured generating text."
@@ -290,9 +308,8 @@ async def generate_text(
     )
 
 
-# generate a node in a tree with a call to aitextgen witha  given prompt
-# write the
+# todo:get the latest story tree
 
-# get a version of the tree back from mongo
+# todo:get a given version of the story tree
 
-# get a given version
+# todo:delete a story tree
