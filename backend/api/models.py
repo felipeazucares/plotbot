@@ -24,8 +24,8 @@ class APIResponse(BaseModel):
     message: str
 
 
-class Payload(BaseModel):
-    """Wrapper class for POST request payload
+class GeneratorPayload(BaseModel):
+    """Wrapper class for POST text generation payload
 
     Args:
         prompt: str containing the prompt to pass to the generator
@@ -33,7 +33,7 @@ class Payload(BaseModel):
     """
 
     prompt: str
-    temperature: float
+    temperature: Optional[float] = 0.7
 
     class Config:
         """example object for docs"""
@@ -42,6 +42,25 @@ class Payload(BaseModel):
             "example": {
                 "prompt": "Hayden dumped his bag at the foot of the stairs and ran up them two at a time. He was so excited to be home that he could hardly contain himself.",
                 "temperature": 0.71234132,
+            }
+        }
+
+
+class StoryPayload(BaseModel):
+    """Wrapper class for POST text to store in database payload
+
+    Args:
+        text: text to store in the next child node
+    """
+
+    text: str
+
+    class Config:
+        """example object for docs"""
+
+        schema_extra = {
+            "example": {
+                "text": "A piece of generated text that will be store in the next child node of the story tree.",
             }
         }
 

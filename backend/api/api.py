@@ -30,7 +30,14 @@ from aitextgen import aitextgen
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from api.helpers import ConsoleDisplay
-from api.models import APIResponse, Payload, Token, TokenData, UserDetails
+from api.models import (
+    APIResponse,
+    GeneratorPayload,
+    StoryPayload,
+    Token,
+    TokenData,
+    UserDetails,
+)
 from api.authentication import Authentication
 import api.database as database
 import api.config
@@ -243,10 +250,10 @@ async def get(
     )
 
 
-@app.post("/")
+@app.post("/text")
 async def generate_text(
     current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
-    request: Payload = Body(...),
+    request: GeneratorPayload = Body(...),
 ) -> APIResponse:
     """generate a text snippet from a given prompt
 
@@ -268,7 +275,7 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(message_to_show=f"generating text snippet")
+            console_display.show_debug_message(message_to_show="generating text snippet")
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,
@@ -284,18 +291,44 @@ async def generate_text(
         print(exception_object)
         raise
 
+    return APIResponse(
+        data={"generated_text": generated_text, "username": current_user.username},
+        code=200,
+        message="Success",
+    )
+
+
+@app.post("/save")
+async def save_text(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
+    request: StoryPayload = Body(...),
+) -> APIResponse:
+    """save provided text snippet in the next child node of the story tree
+
+    Args:
+        current_user (UserDetails, optional): logged in user details.
+        request (StoryPayload, optional): Payload model containing text to store.
+        Defaults to Body(...).
+
+    Raises:
+        HTTPException: for an errored response from the generator model
+
+    Returns:
+        APIResponse: data attribute contains the generated text or an error
+    """
+
     try:
         if DEBUG:
             console_display.show_debug_message(
-                message_to_show="writing text to mongodb story tree"
+                message_to_show="Writing text to mongodb story tree"
             )
         db_storage = database.StoryStorage()
         save_reponse = await db_storage.add_text_to_story_tree(
-            text=generated_text, user_id=current_user.user_id
+            text=request.text, user_id=current_user.user_id
         )
     except Exception as exception_object:
         console_display.show_exception_message(
-            message_to_show="Error occured storing text in mongo db"
+            message_to_show="Error occured storing text in mongodb"
         )
         print(exception_object)
         raise
