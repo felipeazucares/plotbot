@@ -87,8 +87,8 @@ class Story(BaseModel):
         arbitrary_types_allowed = True
 
     user_id: str
-    tree = Tree
-    date_time = datetime.utcnow()
+    tree: Tree
+    date_time: Optional[datetime] = datetime.utcnow()
 
 
 class AddNodeResponse(BaseModel):

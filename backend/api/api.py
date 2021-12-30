@@ -25,13 +25,14 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
+from pydantic.error_wrappers import ValidationError
 from aitextgen import aitextgen
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from api.helpers import ConsoleDisplay
 from api.models import APIResponse, Payload, Token, TokenData, UserDetails
 from api.authentication import Authentication
-from api.database import add_text_to_story_tree
+import api.database as database
 import api.config
 
 
@@ -267,9 +268,7 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(
-                message_to_show=f"generating text snippet"
-            )
+            console_display.show_debug_message(message_to_show=f"generating text snippet")
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,
@@ -288,28 +287,28 @@ async def generate_text(
     try:
         if DEBUG:
             console_display.show_debug_message(
-                message_to_show=f"writing text to mongodb story tree"
+                message_to_show="writing text to mongodb story tree"
             )
-
+        db_storage = database.StoryStorage()
+        save_reponse = await db_storage.add_text_to_story_tree(
+            text=generated_text, user_id=current_user.user_id
+        )
     except Exception as exception_object:
         console_display.show_exception_message(
-            message_to_show="Error occured generating text."
+            message_to_show="Error occured storing text in mongo db"
         )
         print(exception_object)
         raise
 
-    # todo: the text to a tree
-    # todo: if a tree doesn't already exist then create a new one and save it recording the id
-
     return APIResponse(
-        data={"text": generated_text, "username": current_user.username},
+        data={"save_info": save_reponse, "username": current_user.username},
         code=200,
         message="Success",
     )
 
 
-# todo:get the latest story tree
+# todo: route - get the latest story tree
 
-# todo:get a given version of the story tree
+# todo: route - get a given version of the story tree
 
-# todo:delete a story tree
+# todo: route - delete a story tree

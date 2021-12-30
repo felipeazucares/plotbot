@@ -13,10 +13,10 @@ from jose.exceptions import ExpiredSignatureError
 from jose import jwt
 from pytz import timezone
 from passlib.context import CryptContext
-from helpers import ConsoleDisplay
-from fastapi import HTTPException, status
+from api.helpers import ConsoleDisplay
 import api.database as database
-from models import TokenData
+from fastapi import HTTPException, status
+from api.models import TokenData
 
 REDISHOST = os.getenv(key="REDISHOST")
 REDISPORT = os.getenv(key="REDISPORT")
@@ -81,9 +81,15 @@ class Authentication:
             headers={"WWW-Authenticate": "Bearer"},
         )
         if DEBUG:
-            self.console_display.show_debug_message(message_to_show=f"REDISHOST:{REDISHOST}")
-            self.console_display.show_debug_message(message_to_show=f"REDISPORT:{REDISPORT}")
-        redis_client = redis.StrictRedis(host=REDISHOST, port=REDISPORT, password=REDISPASSWORD)
+            self.console_display.show_debug_message(
+                message_to_show=f"REDISHOST:{REDISHOST}"
+            )
+            self.console_display.show_debug_message(
+                message_to_show=f"REDISPORT:{REDISPORT}"
+            )
+        redis_client = redis.StrictRedis(
+            host=REDISHOST, port=REDISPORT, password=REDISPASSWORD
+        )
 
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
@@ -105,9 +111,15 @@ class Authentication:
         """return true if supplied token is in the blacklist"""
         # need to create a new instance of aioredis to get pytests to work
         if DEBUG:
-            self.console_display.show_debug_message(message_to_show=f"REDISHOST:{REDISHOST}")
-            self.console_display.show_debug_message(message_to_show=f"REDISPORT:{REDISPORT}")
-        redis_client = redis.StrictRedis(host=REDISHOST, port=REDISPORT, password=REDISPASSWORD)
+            self.console_display.show_debug_message(
+                message_to_show=f"REDISHOST:{REDISHOST}"
+            )
+            self.console_display.show_debug_message(
+                message_to_show=f"REDISPORT:{REDISPORT}"
+            )
+        redis_client = redis.StrictRedis(
+            host=REDISHOST, port=REDISPORT, password=REDISPASSWORD
+        )
         if redis_client.get(token):
             redis_client.close()
             return True
