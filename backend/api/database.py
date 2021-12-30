@@ -250,26 +250,6 @@ class StoryStorage:
             raise
         return self.delete_result.deleted_count
 
-    # async def number_of_saves_for_account(self, user_id: str) -> int:
-    #     """return count of save documents in the story_collection for supplied user_id"""
-    #     self.user_id = user_id
-    #     self.console_display = ConsoleDisplay()
-    #     if DEBUG:
-    #         self.console_display.show_debug_message(
-    #             message_to_show=f"number_of_saves_for_account({self.user_id}) called"
-    #         )
-    #     try:
-    #         self.save_count = await self.story_collection.count_documents(
-    #             {"user_id": self.user_id}
-    #         )
-    #     except Exception as e:
-    #         self.console_display.show_exception_message(
-    #             message_to_show=f"Exception occured retrieving document count user_id was: {self.user_id}"
-    #         )
-    #         print(e)
-    #         raise
-    #     return self.save_count
-
     async def return_latest_story_save(self, user_id: str) -> dict:
         """return the latest save document from the story_collection for supplied user_id"""
         self.user_id = user_id
@@ -291,61 +271,7 @@ class StoryStorage:
         if self.last_save is None:
             return None
         else:
-            return Story(last_save)
-
-    # async def return_latest_save_for_project(self, user_id: str, project_id) -> object:
-    #     """Returns the latest save document filtered by user and project ids
-
-    #     Args:
-    #         user_id (str): user account id
-    #         project_id (str): project identifier
-
-    #     Returns:
-    #         saves_helper: object containing the latest save
-    #     """
-    #     self.user_id = user_id
-    #     self.project_id = project_id
-    #     self.console_display = ConsoleDisplay()
-    #     if DEBUG:
-    #         self.console_display.show_debug_message(
-    #             message_to_show=f"return_latest_save({self.user_id}) called"
-    #         )
-    #     try:
-    #         self.last_save = await self.story_collection.find_one(
-    #             {"user_id": self.user_id, "project_id": self.project_id},
-    #             sort=[("date_time", -1)],
-    #         )
-
-    #     except Exception as e:
-    #         self.console_display.show_exception_message(
-    #             message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
-    #         )
-    #         print(e)
-    #         raise
-    #     if self.last_save is None:
-    #         return None
-    #     else:
-    #         return saves_helper(self.last_save)
-
-    # async def check_if_document_exists(self, save_id: str) -> int:
-    #     """return count of save documents in the story_collection for supplied save_id"""
-    #     self.save_id = save_id
-    #     self.console_display = ConsoleDisplay()
-    #     if DEBUG:
-    #         self.console_display.show_debug_message(
-    #             message_to_show=f"check_if_document_exists({self.save_id}) called"
-    #         )
-    #     try:
-    #         self.save_count = await self.story_collection.count_documents(
-    #             {"_id": ObjectId(self.save_id)}
-    #         )
-    #     except Exception as e:
-    #         self.console_display.show_exception_message(
-    #             message_to_show=f"Exception occured retrieving document count save_id was: {self.save_id}"
-    #         )
-    #         print(e)
-    #         raise
-    #     return self.save_count
+            return Story(self.last_save)
 
     async def return_save(self, save_id: str) -> dict:
         """return save document from the story_collection for supplied save_id"""
