@@ -266,7 +266,7 @@ class StoryStorage:
             self.console_display.show_debug_message(
                 message_to_show=f"story root node {self.last_save_story.root}"
             )
-
+        self.last_save_story.show()
         if self.last_save_story.root is not None:
             if DEBUG:
                 self.console_display.show_debug_message(
@@ -276,15 +276,15 @@ class StoryStorage:
             self.current_leaf = self.last_save_story.leaves()
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"current leaf is: {self.current_leaf})"
+                    message_to_show=f"current leaf is: {self.current_leaf[0].identifier})"
                 )
             # add the new text node
             self.new_node_id = self.last_save_story.create_node(
-                parent=self.current_leaf[0], data={"text": self.text}
+                parent=self.current_leaf[0].identifier, data={"text": self.text}
             )
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"adding node id:{self.new_node_id} to {self.current_leaf[0]})"
+                    message_to_show=f"adding node id:{self.new_node_id.identifier} to {self.current_leaf[0].identifier})"
                 )
         else:
             # no pre-existing save so we'll create a new node without a parent
