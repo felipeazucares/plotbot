@@ -91,6 +91,19 @@ class Story(BaseModel):
     date_time = datetime.utcnow()
 
 
+class AddNodeResponse(BaseModel):
+    """Wrapper class for returning the details ofr a node that we've added to the story tree"""
+
+    class Config:
+        """required by Pydantic so we can include Tree objects in model"""
+
+        arbitrary_types_allowed = True
+
+    new_node_id: str
+    document_id: str
+    story: Tree
+
+
 # -------------------------------------
 #   Classes for UserDetails
 # -------------------------------------

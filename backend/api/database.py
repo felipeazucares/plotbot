@@ -6,7 +6,7 @@ from treelib import Tree
 from fastapi.encoders import jsonable_encoder
 from helpers import ConsoleDisplay
 from bson.objectid import ObjectId
-from models import UserDetails, Story
+from models import UserDetails, Story, AddNodeResponse
 
 
 MONGO_DETAILS = os.getenv(key="MONGO_DETAILS")
@@ -15,7 +15,7 @@ USER_COLLECTION_NAME = os.getenv(key="USER_COLLECTION_NAME")
 STORY_COLLECTION_NAME = os.getenv(key="STORY_COLLECTION_NAME")
 
 
-console_display = ConsoleDisplay()
+# console_display = ConsoleDisplay()
 
 # ----------------------------------------------------
 #           Functions for loading users
@@ -30,11 +30,14 @@ class UserStorage:
         self.database = self.client.plotbot
         self.user_collection = self.database.get_collection(USER_COLLECTION_NAME)
         self.console_display = ConsoleDisplay()
+        # init method attribs
+        self.username = None
+        self.user_details = None
+        self.user_id = None
 
     async def get_user_details_by_username(self, username: str):
         """return the a user's details given their username - used for log in"""
         self.username = username
-        self.console_display = ConsoleDisplay()
         if DEBUG:
             self.console_display.show_debug_message(
                 message_to_show=f"get_user_details_by_username({self.username}) called"
@@ -79,6 +82,8 @@ class UserStorage:
 #       Functions for Story Tree CRUD ops
 # ----------------------------------------------------
 class StoryStorage:
+    """Class for managing STory object saving and retrieval"""
+
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
         self.database = self.client.fabulator
@@ -108,6 +113,10 @@ class StoryStorage:
         self.children = None
         self.child_id = None
         self.name = None
+        self.text = None
+        self.last_save_story = None
+        self.current_leaf = None
+        self.new_node_id = None
 
     async def save_story(self, story: Story) -> str:
         """save the story provided to mongo db
@@ -290,6 +299,62 @@ class StoryStorage:
             raise
 
         return self.build_tree_from_dict(tree_dict=self.story)
+
+    async def add_text_to_story_tree(self, text: str, user_id: str) -> str:
+        self.text = text
+        self.user_id = user_id
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"add_text_to_story_tree({self.text},{self.user_id}) called"
+            )
+        try:
+            self.last_save_story = self.return_latest_story(user_id=self.user_id)
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show=f"Exception occured returning latest save story from the database user_id was: {self.user_id}"
+            )
+            print(exception_object)
+            raise
+        if self.last_save_story is not None:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"save document detected {self.last_save_story}"
+                )
+            # there is a saved story - so rebuild from the dict stored & add a node
+            self.story = self.build_tree_from_dict(self.last_save_story)
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f" story tree returned {self.story})"
+                )
+            # since the tree is a vertical chain there should only ever be one leaf
+            self.current_leaf = self.story.leaves()
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"current leaf is: {self.current_leaf})"
+                )
+            # add the new text node
+            self.new_node_id = self.story.create_node(
+                parent=self.current_leaf[0], data={"text": self.text}
+            )
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"adding node id:{self.new_node_id} to {self.current_leaf[0]})"
+                )
+            # save the updated tree back to mongo
+            self.save_id = self.save_story(self.story)
+        else:
+            # no pre-existing save so we'll create a new tree add a node and save it
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="No pre-existing save - creating a new tree"
+                )
+            self.story = Tree()
+            self.new_node_id = self.story.create_node(data={"text": self.text})
+            self.save_id = self.save_story(self.story)
+
+        return AddNodeResponse(
+            new_node_id=self.new_node_id, document_id=self.save_id, story=self.story
+        )
 
     async def return_latest_story(self, user_id: str) -> Tree:
         """return the tree found in the latest save document
