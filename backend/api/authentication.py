@@ -13,10 +13,10 @@ from jose.exceptions import ExpiredSignatureError
 from jose import jwt
 from pytz import timezone
 from passlib.context import CryptContext
-from api.helpers import ConsoleDisplay
+from helpers import ConsoleDisplay
 from fastapi import HTTPException, status
 import api.database as database
-from api.models import TokenData
+from models import TokenData
 
 REDISHOST = os.getenv(key="REDISHOST")
 REDISPORT = os.getenv(key="REDISPORT")
@@ -60,9 +60,7 @@ class Authentication:
             return False
         return user
 
-    def create_access_token(
-        self, data: dict, expires_delta: Optional[timedelta] = None
-    ):
+    def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None):
         """create an access token with an expiry date"""
         to_encode = data.copy()
         if expires_delta:
@@ -83,24 +81,16 @@ class Authentication:
             headers={"WWW-Authenticate": "Bearer"},
         )
         if DEBUG:
-            self.console_display.show_debug_message(
-                message_to_show=f"REDISHOST:{REDISHOST}"
-            )
-            self.console_display.show_debug_message(
-                message_to_show=f"REDISPORT:{REDISPORT}"
-            )
-        redis_client = redis.StrictRedis(
-            host=REDISHOST, port=REDISPORT, password=REDISPASSWORD
-        )
+            self.console_display.show_debug_message(message_to_show=f"REDISHOST:{REDISHOST}")
+            self.console_display.show_debug_message(message_to_show=f"REDISPORT:{REDISPORT}")
+        redis_client = redis.StrictRedis(host=REDISHOST, port=REDISPORT, password=REDISPASSWORD)
 
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             user_id: str = payload.get("sub")
             token_scopes = payload.get("scopes", [])
             expires = payload.get("exp")
-            token_data = TokenData(
-                scopes=token_scopes, username=user_id, expires=expires
-            )
+            token_data = TokenData(scopes=token_scopes, username=user_id, expires=expires)
         except ExpiredSignatureError:
             raise credentials_exception
         result = redis_client.setex(
@@ -115,15 +105,9 @@ class Authentication:
         """return true if supplied token is in the blacklist"""
         # need to create a new instance of aioredis to get pytests to work
         if DEBUG:
-            self.console_display.show_debug_message(
-                message_to_show=f"REDISHOST:{REDISHOST}"
-            )
-            self.console_display.show_debug_message(
-                message_to_show=f"REDISPORT:{REDISPORT}"
-            )
-        redis_client = redis.StrictRedis(
-            host=REDISHOST, port=REDISPORT, password=REDISPASSWORD
-        )
+            self.console_display.show_debug_message(message_to_show=f"REDISHOST:{REDISHOST}")
+            self.console_display.show_debug_message(message_to_show=f"REDISPORT:{REDISPORT}")
+        redis_client = redis.StrictRedis(host=REDISHOST, port=REDISPORT, password=REDISPASSWORD)
         if redis_client.get(token):
             redis_client.close()
             return True

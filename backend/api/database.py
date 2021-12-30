@@ -4,11 +4,9 @@ import os
 import motor.motor_asyncio
 from treelib import Tree
 from fastapi.encoders import jsonable_encoder
-from api.helpers import ConsoleDisplay
+from helpers import ConsoleDisplay
 from bson.objectid import ObjectId
-import datetime
-import json
-from api.models import UserDetails, Story
+from models import UserDetails, Story
 
 
 MONGO_DETAILS = os.getenv(key="MONGO_DETAILS")
@@ -42,9 +40,7 @@ class UserStorage:
                 message_to_show=f"get_user_details_by_username({self.username}) called"
             )
         try:
-            user_deets = await self.user_collection.find_one(
-                {"username": self.username}
-            )
+            user_deets = await self.user_collection.find_one({"username": self.username})
             if user_deets is not None:
                 self.user_details = UserDetails(**user_deets)
             else:
@@ -58,8 +54,8 @@ class UserStorage:
         return self.user_details
 
     async def get_user_details_by_user_id(self, user_id):
-        self.user_id = user_id
         """return the a user's details given their user_id"""
+        self.user_id = user_id
         if DEBUG:
             self.console_display.show_debug_message(
                 message_to_show=f"get_user_details_by_account({self.user_id}) called"
@@ -79,12 +75,39 @@ class UserStorage:
         return self.user_details
 
 
+# ----------------------------------------------------
+#       Functions for Story Tree CRUD ops
+# ----------------------------------------------------
 class StoryStorage:
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
         self.database = self.client.fabulator
         self.story_collection = self.database.get_collection(STORY_COLLECTION_NAME)
         self.console_display = ConsoleDisplay()
+        # init class attribs prior to use
+        self.user_id = None
+        self.saves = []
+        self.story = None
+        self.save_response = None
+        self.new_save = None
+        self.delete_result = None
+        self.last_save = None
+        self.save_id = None
+        self.document_id = None
+        self.story_document = None
+        self.tree_id = None
+        self.loaded_tree = None
+        self.new_tree = None
+        self.node_id = None
+        self.last_save_tree = None
+        self.tree = None
+        self.tree_dict = None
+        self.final_tree = None
+        self.root_node = None
+        self.payload = None
+        self.children = None
+        self.child_id = None
+        self.name = None
 
     async def save_story(self, story: Story) -> str:
         """save the story provided to mongo db
@@ -122,80 +145,6 @@ class StoryStorage:
             print(exception_object)
             raise
         return str(ObjectId(self.save_response.inserted_id))
-
-    # async def create_tree(
-    #     self, user_id: str, project_id: str, root_node_tag: str
-    # ) -> str:
-    #     """Create a new tree structure
-
-    #     Args:
-    #         user_id (str): salted hash id for user
-    #         project_id (str): salted hash id for project
-    #         root_node_tag (str): name for root node in the tree
-
-    #     Returns:
-    #         str: the id of the newly created tree
-    #     """
-    #     self.user_id = user_id
-    #     self.project_id = project_id
-    #     self.root_node_tag = root_node_tag
-    #     self.console_display = ConsoleDisplay()
-    #     # create the new tree object
-    #     try:
-    #         self.new_tree = Tree()
-    #         self.new_tree.create_node(self.root_node_tag)
-    #         self.new_tree.show()
-    #     except Exception as e:
-    #         self.console_display.show_exception_message(
-    #             message_to_show=f"Exception occured creating new tree details for user_id: {self.user_id}"
-    #         )
-    #         print(e)
-    #         raise
-    #     # now save it
-    #     try:
-    #         self.save_response = await self.save_working_tree(
-    #             user_id=self.user_id,
-    #             project_id=self.project_id,
-    #             tree=self.new_tree,
-    #         )
-    #     except Exception as e:
-    #         self.console_display.show_exception_message(
-    #             message_to_show=f"Exception occured saving new tree details for user_id: {self.user_id}"
-    #         )
-    #         print(e)
-    #         raise
-    #     if DEBUG:
-    #         self.console_display.show_debug_message(
-    #             message_to_show=f"new_tree_identifier:{self.new_tree.identifier}"
-    #         )
-    #     return self.new_tree.identifier
-
-    # async def check_tree_exists(self, user_id: str, tree_id: str, project_id) -> bool:
-    #     self.user_id = user_id
-    #     self.project_id = project_id
-    #     self.tree_id = tree_id
-    #     self.console_display = ConsoleDisplay()
-    #     # see if we can find an object in the tree collection that matchs the parameters
-    #     try:
-    #         self.last_save = await self.story_collection.find_one(
-    #             {
-    #                 "user_id": self.user_id,
-    #                 "project_id": self.project_id,
-    #                 "tree._identifier": tree_id,
-    #             },
-    #             sort=[("date_time", -1)],
-    #         )
-    #     except Exception as e:
-    #         self.console_display.show_exception_message(
-    #             message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
-    #         )
-    #         print(e)
-    #         raise
-    #     if self.last_save is not None:
-    #         self.tree_was_found = True
-    #     else:
-    #         self.tree_was_found = False
-    #     return self.tree_was_found
 
     async def list_all_story_saves(self, user_id: str) -> dict:
         """return a list of all story documents for user_id
@@ -250,8 +199,15 @@ class StoryStorage:
             raise
         return self.delete_result.deleted_count
 
-    async def return_latest_story_save(self, user_id: str) -> dict:
-        """return the latest save document from the story_collection for supplied user_id"""
+    async def return_latest_story_save(self, user_id: str) -> Story:
+        """Returns latest story document or user in mongodb
+
+        Args:
+            user_id (str): hashed salted userid
+
+        Returns:
+            Story: most recent save document
+        """
         self.user_id = user_id
         if DEBUG:
             self.console_display.show_debug_message(
@@ -268,92 +224,119 @@ class StoryStorage:
             )
             print(exception_object)
             raise
-        if self.last_save is None:
-            return None
-        else:
-            return Story(self.last_save)
+            # if self.last_save is None:
+            #     return None
+            # else:
+        return Story(self.last_save)
 
-    async def return_save(self, save_id: str) -> dict:
-        """return save document from the story_collection for supplied save_id"""
-        self.save_id = save_id
-        self.console_display = ConsoleDisplay()
+    async def return_specified_save_document(self, document_id: str) -> Story:
+        """return a story object from a specified save document
+
+        Args:
+            document_id (str): the id of the document we want
+
+        Returns:
+            Story: story specified
+        """
+        self.document_id = document_id
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"return_save({self.save_id}) called"
+                message_to_show=f"return_save({self.document_id}) called"
             )
         try:
-            self.save = await self.story_collection.find_one(
-                {"_id": ObjectId(self.save_id)}
+            self.story_document = await self.story_collection.find_one(
+                {"_id": ObjectId(self.document_id)}
             )
-        except Exception as e:
+        except Exception as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occured retrieving save from the database save_id was: {self.save_id}"
+                message_to_show=f"Exception occured retrieving save from the database document_id was: {self.document_id}"
             )
-            print(e)
+            print(exception_object)
             raise
-        return saves_helper(self.save)
+        return self.story_document
 
-    async def load_save_into_working_tree(self, save_id: str) -> Tree:
-        """return a tree containing the latest saved tree"""
-        self.save_id = save_id
-        self.console_display = ConsoleDisplay()
+    async def return_saved_story(self, document_id: str) -> Tree:
+        """load a specified save document and return contained Story tree object
+
+        Args:
+            document_id (str): save document id
+
+        Returns:
+            Tree: Story tree object extracted from save
+        """
+        self.document_id = document_id
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"load_save_into_working_tree({self.save_id}) called"
+                message_to_show=f"load_save_into_working_tree({self.document_id}) called"
             )
         try:
-            self.save = await self.return_save(save_id=self.save_id)
-        except Exception as e:
-            self.console_display.show_exception_message(
-                message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.save_id}"
+            self.story_document = await self.return_specified_save_document(
+                document_id=self.document_id
             )
-            print(e)
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.document_id}"
+            )
+            print(exception_object)
             raise
         # get the tree dict from the saved document
         try:
-            self.save_tree = self.save["tree"]
-        except Exception as e:
+            self.story = self.story_document["tree"]
+        except Exception as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occured retrieving tree structure from last save, last_save: {self.save}"
+                message_to_show=f"Exception occured retrieving tree structure from last save, last_save: {self.document_id}"
             )
-            print(e)
+            print(exception_object)
             raise
 
-        return self.build_tree_from_dict(tree_dict=self.save_tree)
+        return self.build_tree_from_dict(tree_dict=self.story)
 
-    async def load_latest_into_working_tree(self, user_id: str) -> Tree:
-        """return a tree containing the latest saved tree"""
+    async def return_latest_story(self, user_id: str) -> Tree:
+        """return the tree found in the latest save document
+
+        Args:
+            user_id (str): hashed salted user_id
+
+        Returns:
+            Tree: Story tree object found in latest save
+        """
         self.user_id = user_id
-        self.console_display = ConsoleDisplay()
         if DEBUG:
             self.console_display.show_debug_message(
                 message_to_show=f"load_latest_into_working_tree({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save(user_id=self.user_id)
-        except Exception as e:
+            self.last_save = await self.return_latest_story_save(user_id=self.user_id)
+        except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
             )
-            print(e)
+            print(exception_object)
             raise
         # get the tree dict from the saved document
         if self.last_save:
             try:
                 self.last_save_tree = self.last_save["tree"]
                 self.tree = self.build_tree_from_dict(tree_dict=self.last_save_tree)
-            except Exception as e:
+            except Exception as exception_object:
                 self.console_display.show_exception_message(
                     message_to_show=f"Exception occured retrieving tree structure from last save, last_save: {self.last_save}"
                 )
-                print(e)
+                print(exception_object)
                 raise
         else:
             self.tree = Tree()
         return self.tree
 
     def build_tree_from_dict(self, tree_dict: dict) -> Tree:
-        """return a tree built from provided dict structure"""
+        """build a Tree object from a tree dictionary object stored in a save document
+
+        Args:
+            tree_dict (dict): The tree dictionary object to convert into a Tree
+
+        Returns:
+            Tree: Story tree built from input dictionary
+        """
         self.tree_dict = tree_dict
         # Looks like there is no root in the subtree
         try:
@@ -362,14 +345,16 @@ class StoryStorage:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving root object from dict, self.tree_dict: {self.tree_dict} {e}"
             )
+            print(exception_object)
             raise
         # create the root node
         try:
             self.new_tree = Tree(identifier=self.tree_dict["_identifier"])
-        except Exception as e:
+        except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured creating new tree with _identifier:{self.tree_dict['_identifier']} {e}"
             )
+            print(exception_object)
             raise
 
         self.final_tree = self.add_a_node(
@@ -380,17 +365,26 @@ class StoryStorage:
         )
         return self.final_tree
 
-    def add_a_node(self, tree_id, loaded_tree, new_tree, node_id) -> Tree:
-        """Traverse the dict in mongo and rebuild the tree a node at a time (recursive)"""
+    def add_a_node(
+        self, tree_id: str, loaded_tree: dict, new_tree: Tree, node_id: str
+    ) -> Tree:
+        """recursive routine to add a node extracted from a loaded dict to add to a Tree
+
+        Args:
+            tree_id (str): id of the tree we're constructing
+            loaded_tree (dict): dictionary object containing the nodes we want to add to the Tree
+            new_tree (Tree): the Tree object we're building
+            node_id (str): id of the node we want to add
+
+        Returns:
+            Tree: Story tree object we're constructing
+        """
         self.tree_id = tree_id
         self.loaded_tree = loaded_tree
         self.new_tree = new_tree
         self.node_id = node_id
-        self.console_display = ConsoleDisplay()
         if DEBUG:
-            self.console_display.show_debug_message(
-                message_to_show=f"add_a_node() called"
-            )
+            self.console_display.show_debug_message(message_to_show="add_a_node() called")
 
         # get name of node that's been passed to the routine
         try:
@@ -399,42 +393,42 @@ class StoryStorage:
                 self.console_display.show_debug_message(
                     message_to_show=f"Current Node is: {self.name}"
                 )
-        except KeyError as e:
+        except KeyError as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occurred unable to find _tag for {self.loaded_tree['_nodes'][node_id]}"
             )
             self.console_display.show_exception_message(
                 message_to_show=f"loaded_tree['_nodes'][node_id]['_tag']: {self.loaded_tree['_nodes'][node_id]['_tag']}"
             )
-            print(e)
+            print(exception_object)
             raise
         # get the id of the current node
         try:
-            self.id = self.loaded_tree["_nodes"][node_id]["_identifier"]
+            self.tree_id = self.loaded_tree["_nodes"][node_id]["_identifier"]
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"Current id is: {self.id}"
+                    message_to_show=f"Current id is: {self.tree_id}"
                 )
-        except KeyError as e:
+        except KeyError as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occurred unable to find _identifier for {self.loaded_tree['_nodes'][node_id]}"
             )
             self.console_display.show_exception_message(
                 message_to_show=f"loaded_tree['_nodes'][node_id]['_identifier']: {self.loaded_tree['_nodes'][node_id]['_identifier']}"
             )
-            print(e)
+            print(exception_object)
             raise
         # set payload for new node to what's in the current node
         try:
             self.payload = self.loaded_tree["_nodes"][node_id]["data"]
-        except KeyError as e:
+        except KeyError as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occurred unable to get node data"
+                message_to_show="Exception occurred unable to get node data"
             )
             self.console_display.show_exception_message(
                 message_to_show=f"loaded_tree['_nodes'][node_id]['data']: {self.loaded_tree['_nodes'][node_id]['data']}"
             )
-            print(e)
+            print(exception_object)
             raise
 
         # for some reason the children of a node are stored under the tree_id key
@@ -452,44 +446,42 @@ class StoryStorage:
                 self.console_display.show_debug_message(
                     message_to_show=f"{self.name}'s children: None"
                 )
-        except Exception as e:
+        except Exception as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occurred retrieving the _successors field"
+                message_to_show="Exception occurred retrieving the _successors field"
             )
             self.console_display.show_exception_message(
                 message_to_show=f"id:{self.loaded_tree['_nodes'][node_id]['_identifier']}"
             )
-            print(e)
+            print(exception_object)
             raise
 
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"creating node with - name: {self.name}, identifier: {self.id}"
+                message_to_show=f"creating node with - name: {self.name}, identifier: {self.tree_id}"
             )
 
         try:
             self.new_tree.create_node(
                 tag=self.name,
-                identifier=self.id,
+                identifier=self.tree_id,
                 parent=self.loaded_tree["_nodes"][node_id]["_predecessor"][tree_id],
                 data=self.payload,
             )
-        except Exception as e:
+        except Exception as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occurred adding a node to the working tree."
+                message_to_show="Exception occurred adding a node to the working tree."
             )
             self.console_display.show_exception_message(
-                message_to_show=f"name: {self.name}, identifier: {self.id}, data: {self.payload}"
+                message_to_show=f"name: {self.name}, identifier: {self.tree_id}, data: {self.payload}"
             )
-            print(e)
+            print(exception_object)
             raise
 
-        if self.children != None:
+        if self.children is not None:
 
             if DEBUG:
-                self.console_display.show_debug_message(
-                    message_to_show=f"recursive call"
-                )
+                self.console_display.show_debug_message(message_to_show="recursive call")
             for self.child_id in self.children:
                 self.add_a_node(
                     tree_id=self.tree_id,
