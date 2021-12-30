@@ -167,7 +167,7 @@ class StoryStorage:
         self.user_id = user_id
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"return_latest_story_save({self.user_id}) called"
+                message_to_show=f"return_latest_save_document({self.user_id}) called"
             )
         try:
             self.last_save = await self.story_collection.find_one(
@@ -185,7 +185,7 @@ class StoryStorage:
                 self.console_display.show_debug_message(
                     message_to_show="Save document found"
                 )
-            self.last_save = Story(**self.last_save)
+            # self.last_save = Story(**self.last_save)
         else:
             if DEBUG:
                 self.console_display.show_debug_message(
