@@ -107,7 +107,7 @@ class Story(BaseModel):
 
     user_id: str
     tree: Tree
-    date_time: Optional[datetime] = datetime.utcnow()
+    date_time: datetime
 
 
 class AddNodeResponse(BaseModel):
