@@ -226,7 +226,7 @@ class StoryStorage:
                 self.tree = self.build_tree_from_dict(tree_dict=self.last_save_tree)
             except Exception as exception_object:
                 self.console_display.show_exception_message(
-                    message_to_show=f"Exception occured retrieving tree structure from last save, last_save: {self.last_save}"
+                    message_to_show=f"Exception occured rebuilding tree structure from last save, last_save: {self.last_save}"
                 )
                 print(exception_object)
                 raise
@@ -326,18 +326,29 @@ class StoryStorage:
             Tree: Story tree built from input dictionary
         """
         self.tree_dict = tree_dict
-        # Looks like there is no root in the subtree
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"build_tree_from_dict({self.tree_dict}) called"
+            )
         try:
             self.root_node = self.tree_dict["root"]
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"root is:{self.tree_dict['root']}"
+                )
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving root object from dict, self.tree_dict: {self.tree_dict} {exception_object}"
             )
             print(exception_object)
             raise
-        # create the root node
+        # create a new tree
         try:
             self.new_tree = Tree(identifier=self.tree_dict["_identifier"])
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"new tree created with id:{self.tree_dict['_identifier']}"
+                )
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured creating new tree with _identifier:{self.tree_dict['_identifier']} {exception_object}"
@@ -367,12 +378,15 @@ class StoryStorage:
         Returns:
             Tree: Story tree object we're constructing
         """
-        self.tree_id = tree_id
-        self.loaded_tree = loaded_tree
-        self.new_tree = new_tree
-        self.node_id = node_id
-        if DEBUG:
-            self.console_display.show_debug_message(message_to_show="add_a_node() called")
+        self.tree_id = tree_id  # identifier for the tree that we're building
+        self.loaded_tree = loaded_tree  # the tree structure returned from mongo
+        self.new_tree = new_tree  # tree we're building
+        self.node_id = node_id  # the node to add
+
+        # if DEBUG:
+        #     self.console_display.show_debug_message(
+        #         message_to_show=f"add_a_node(loaded_tree:{self.loaded_tree},new_tree:{self.new_tree},node_id:{self.node_id}) called"
+        #     )
 
         # get name of node that's been passed to the routine
         try:
