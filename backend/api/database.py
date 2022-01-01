@@ -439,7 +439,7 @@ class StoryStorage:
             )
             print(exception_object)
             raise
-        # children and successors are stored under the self.tree_id
+        # parent (_predecessor) and children(_successors) are stored under against self.tree_id key
         print(f"tree_id:{self.tree_id}")  # tree id is corrupted at this point somehow
         if DEBUG:
             self.console_display.show_debug_message(
