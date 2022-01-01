@@ -44,9 +44,7 @@ class UserStorage:
                 message_to_show=f"get_user_details_by_username({self.username}) called"
             )
         try:
-            user_deets = await self.user_collection.find_one(
-                {"username": self.username}
-            )
+            user_deets = await self.user_collection.find_one({"username": self.username})
             if user_deets is not None:
                 self.user_details = UserDetails(**user_deets)
             else:
@@ -213,9 +211,7 @@ class StoryStorage:
                 message_to_show=f"return_latest_story({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(
-                user_id=self.user_id
-            )
+            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -341,7 +337,7 @@ class StoryStorage:
             self.root_node = self.tree_dict["root"]
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"root is:{self.tree_dict['root']}"
+                    message_to_show=f"root node in dict is:{self.tree_dict['root']}"
                 )
         except Exception as exception_object:
             self.console_display.show_exception_message(
@@ -354,7 +350,7 @@ class StoryStorage:
             self.new_tree = Tree(identifier=self.tree_dict["_identifier"])
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"new tree created with id:{self.tree_dict['_identifier']}"
+                    message_to_show=f"new empty tree object created with id:{self.tree_dict['_identifier']}"
                 )
         except Exception as exception_object:
             self.console_display.show_exception_message(
@@ -397,84 +393,106 @@ class StoryStorage:
 
         # get name of node that's been passed to the routine
         try:
-            self.name = self.loaded_tree["_nodes"][node_id]["_tag"]
+            self.name = self.loaded_tree["_nodes"][self.node_id]["_tag"]
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"Current Node is: {self.name}"
+                    message_to_show=f"node tag in self.loaded_tree['_nodes'][node_id] dict is: {self.name}"
                 )
         except KeyError as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occurred unable to find _tag for {self.loaded_tree['_nodes'][node_id]}"
+                message_to_show=f"Exception occurred unable to find _tag for {self.loaded_tree['_nodes'][self.node_id]} in loaded_tree dict"
             )
             self.console_display.show_exception_message(
-                message_to_show=f"loaded_tree['_nodes'][node_id]['_tag']: {self.loaded_tree['_nodes'][node_id]['_tag']}"
+                message_to_show=f"loaded_tree['_nodes'][node_id]['_tag']: {self.loaded_tree['_nodes'][self.node_id]['_tag']}"
             )
             print(exception_object)
             raise
         # get the id of the current node
         try:
-            self.tree_id = self.loaded_tree["_nodes"][node_id]["_identifier"]
+            self.tree_id = self.loaded_tree["_nodes"][self.node_id]["_identifier"]
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"Current id is: {self.tree_id}"
+                    message_to_show=f"loaded_tree['_nodes'][self.node_id][_identifier] is: {self.tree_id}"
                 )
         except KeyError as exception_object:
             self.console_display.show_exception_message(
-                message_to_show=f"Exception occurred unable to find _identifier for {self.loaded_tree['_nodes'][node_id]}"
+                message_to_show=f"Exception occurred unable to find _identifier for {self.loaded_tree['_nodes'][self.node_id]}"
             )
             self.console_display.show_exception_message(
-                message_to_show=f"loaded_tree['_nodes'][node_id]['_identifier']: {self.loaded_tree['_nodes'][node_id]['_identifier']}"
+                message_to_show=f"loaded_tree['_nodes'][node_id]['_identifier']: {self.loaded_tree['_nodes'][self.node_id]['_identifier']}"
             )
             print(exception_object)
             raise
         # set payload for new node to what's in the current node
         try:
-            self.payload = self.loaded_tree["_nodes"][node_id]["data"]
+            self.payload = self.loaded_tree["_nodes"][self.node_id]["data"]
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"payload set to {self.payload}"
+                )
         except KeyError as exception_object:
             self.console_display.show_exception_message(
                 message_to_show="Exception occurred unable to get node data"
             )
             self.console_display.show_exception_message(
-                message_to_show=f"loaded_tree['_nodes'][node_id]['data']: {self.loaded_tree['_nodes'][node_id]['data']}"
+                message_to_show=f"loaded_tree['_nodes'][self.node_id]['data']: {self.loaded_tree['_nodes'][self.node_id]['data']}"
             )
             print(exception_object)
             raise
-
-        # for some reason the children of a node are stored under the tree_id key
-
+        # children and successors are stored under the self.tree_id
+        print(f"tree_id:{self.tree_id}")  # tree id is corrupted at this point somehow
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"{self.node_id} _successors: {self.loaded_tree['_nodes'][self.node_id]['_successors']}"
+            )
         try:
-            self.children = self.loaded_tree["_nodes"][node_id]["_successors"][tree_id]
+            self.children = self.loaded_tree["_nodes"][self.node_id]["_successors"][
+                self.tree_id
+            ]
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"{self.name}'s children: {self.children}"
+                    message_to_show=f"self.loaded_tree['_nodes'][self.node_id]['_successors'][self.tree_id] children: {self.children}"
                 )
         except KeyError:
             # sometimes the _successors field has no key - so if we can't find it set to None
             self.children = None
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"{self.name}'s children: None"
+                    message_to_show=f"key error caught: no successors key for {self.name}'s children: None"
                 )
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show="Exception occurred retrieving the _successors field"
             )
             self.console_display.show_exception_message(
-                message_to_show=f"id:{self.loaded_tree['_nodes'][node_id]['_identifier']}"
+                message_to_show=f"id:{self.loaded_tree['_nodes'][self.node_id]['_identifier']}"
             )
             print(exception_object)
             raise
 
-        if DEBUG:
-            self.console_display.show_debug_message(
-                message_to_show=f"creating node with - name: {self.name}, identifier: {self.tree_id}"
-            )
+        if (
+            self.loaded_tree["_nodes"][self.node_id]["_predecessor"][
+                self.tree_id
+            ]  # <<< cannot find this key for some reason using the node id isntead of the tree_id
+            is not None
+        ):
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"creating node with - name: {self.name}, identifier: {self.node_id}, parent: {self.loaded_tree['_nodes'][self.node_id]['_predecessor'][self.tree_id]}"
+                )
+        else:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="creating node with - name: {self.name}, identifier: {self.node_id}, parent: none"
+                )
 
         try:
             self.new_tree.create_node(
                 tag=self.name,
-                identifier=self.tree_id,
-                parent=self.loaded_tree["_nodes"][node_id]["_predecessor"][tree_id],
+                identifier=self.node_id,
+                parent=self.loaded_tree["_nodes"][self.node_id]["_predecessor"][
+                    self.tree_id
+                ],
                 data=self.payload,
             )
         except Exception as exception_object:
@@ -490,9 +508,7 @@ class StoryStorage:
         if self.children is not None:
 
             if DEBUG:
-                self.console_display.show_debug_message(
-                    message_to_show="recursive call"
-                )
+                self.console_display.show_debug_message(message_to_show="recursive call")
             for self.child_id in self.children:
                 self.add_a_node(
                     tree_id=self.tree_id,
