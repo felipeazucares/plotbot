@@ -409,7 +409,7 @@ class StoryStorage:
             raise
         # get the id of the current node
         try:
-            self.tree_id = self.loaded_tree["_nodes"][self.node_id]["_identifier"]
+            self.node_id = self.loaded_tree["_nodes"][self.node_id]["_identifier"]
             if DEBUG:
                 self.console_display.show_debug_message(
                     message_to_show=f"loaded_tree['_nodes'][self.node_id][_identifier] is: {self.tree_id}"
