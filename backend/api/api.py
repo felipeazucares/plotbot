@@ -432,7 +432,43 @@ async def get_saves(
     )
 
 
-# todo: get a list of stories
+@app.delete("/save")
+async def delete_all_saves(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
+) -> APIResponse:
+    """Delets all the sotry documents associated with the current user
+
+    Args:
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
+
+    Returns:
+        APIResponse: object containing number of docs deleted
+    """
+    if DEBUG:
+        console_display.show_debug_message(message_to_show="delete_all_saves() called")
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"deleting all saves saves for :{current_user.user_id}"
+            )
+        db_storage = database.StoryStorage()
+        retrieve_reponse = await db_storage.delete_all_story_saves(
+            user_id=current_user.user_id
+        )
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured deleting documents from mongodb"
+        )
+        print(exception_object)
+        raise
+
+    return APIResponse(
+        data={"deletions": retrieve_reponse},
+        code=200,
+        message="Success",
+    )
+
 
 # todo: route - get a given save document of the story tree
 
