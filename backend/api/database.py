@@ -268,7 +268,6 @@ class StoryStorage:
             self.console_display.show_debug_message(
                 message_to_show=f"story root node {self.last_save_story.root}"
             )
-        # self.last_save_story.show()
         if self.last_save_story.root is not None:
             if DEBUG:
                 self.console_display.show_debug_message(
@@ -470,9 +469,7 @@ class StoryStorage:
             raise
 
         if (
-            self.loaded_tree["_nodes"][self.node_id]["_predecessor"][
-                self.tree_id
-            ]  # <<< cannot find this key for some reason using the node id isntead of the tree_id
+            self.loaded_tree["_nodes"][self.node_id]["_predecessor"][self.tree_id]
             is not None
         ):
             if DEBUG:

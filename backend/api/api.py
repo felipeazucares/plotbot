@@ -323,21 +323,6 @@ async def save_text(
         )
         print(exception_object)
         raise
-    try:
-        if DEBUG:
-            console_display.show_debug_message(
-                message_to_show="Writing text to mongodb story tree"
-            )
-        db_storage = database.StoryStorage()
-        save_reponse = await db_storage.add_text_to_story_tree(
-            text=request.text, user_id=current_user.user_id
-        )
-    except Exception as exception_object:
-        console_display.show_exception_message(
-            message_to_show="Error occured storing text in mongodb"
-        )
-        print(exception_object)
-        raise
 
     return APIResponse(
         data={"save_info": save_reponse, "username": current_user.username},
