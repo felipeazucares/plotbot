@@ -288,6 +288,60 @@ class StoryStorage:
                 raise
         return self.tree
 
+    async def return_latest_story_text(self, user_id: str) -> str:
+        """return the story text by traversing the latest tree
+
+        Args:
+            user_id (str): hashed salted user_id
+
+        Returns:
+            str: containing compiled text from tree object
+        """
+        self.user_id = user_id
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"return_latest_story_text({self.user_id}) called"
+            )
+        try:
+            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
+            )
+            print(exception_object)
+            raise
+        # get the tree dict from the saved document
+        if self.last_save is not None:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="Story save exists - rebuilding tree"
+                )
+            try:
+                self.last_save_tree = self.last_save["tree"]
+                self.tree = self.build_tree_from_dict(tree_dict=self.last_save_tree)
+            except Exception as exception_object:
+                self.console_display.show_exception_message(
+                    message_to_show=f"Exception occured rebuilding tree structure from last save, last_save: {self.last_save}"
+                )
+                print(exception_object)
+                raise
+            # now recursively parse the given tree
+            text = traverse_tree(tree=self.last_save)
+        else:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="No Story save exists - creating Tree()"
+                )
+            try:
+                self.tree = Tree()
+            except Exception as exception_object:
+                self.console_display.show_exception_message(
+                    message_to_show="Exception occured creating new tree"
+                )
+                print(exception_object)
+                raise
+        return self.tree
+
     async def return_a_story(self, user_id: str, document_id: str) -> Tree:
         """return the tree found in the specified save document
 
