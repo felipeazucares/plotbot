@@ -251,7 +251,7 @@ async def get(
 
 
 @app.get("/story")
-async def get_latest_story(
+async def get_latest_story_object(
     current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
 ) -> APIResponse:
     """Returns current version of a story for the current user
@@ -263,12 +263,14 @@ async def get_latest_story(
         APIResponse: object containing Story object wrapped in APIResponse class
     """
     if DEBUG:
-        console_display.show_debug_message(message_to_show="get_latest_story() called")
+        console_display.show_debug_message(
+            message_to_show="get_latest_story_object() called"
+        )
 
     try:
         if DEBUG:
             console_display.show_debug_message(
-                message_to_show=f"Reading story froom mongodb for user_id:{current_user.user_id}"
+                message_to_show=f"Reading story object from mongodb for user_id:{current_user.user_id}"
             )
         db_storage = database.StoryStorage()
         retrieve_reponse = await db_storage.return_latest_story(
@@ -278,6 +280,46 @@ async def get_latest_story(
     except Exception as exception_object:
         console_display.show_exception_message(
             message_to_show="Error occured retrieving story from mongodb"
+        )
+        print(exception_object)
+        raise
+
+    return APIResponse(
+        data={"story": retrieve_reponse},
+        code=200,
+        message="Success",
+    )
+
+
+@app.get("/story/{document_id}")
+async def get_a_story_object(
+    document_id: str,
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"]),
+) -> APIResponse:
+    """Returns an identified story for the current user
+
+    Args:
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
+        document_id : str : saved database document id
+    Returns:
+        APIResponse: object containing Story object wrapped in APIResponse class
+    """
+    if DEBUG:
+        console_display.show_debug_message(message_to_show="get_a_story_object() called")
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"Reading a story object: {document_id} from mongodb for user_id:{current_user.user_id}"
+            )
+        db_storage = database.StoryStorage()
+        retrieve_reponse = await db_storage.return_a_story(
+            user_id=current_user.user_id, document_id=document_id
+        )
+        retrieve_reponse.show()
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured retrieving the story from mongodb"
         )
         print(exception_object)
         raise
@@ -326,6 +368,47 @@ async def save_text(
 
     return APIResponse(
         data={"save_info": save_reponse, "username": current_user.username},
+        code=200,
+        message="Success",
+    )
+
+
+@app.get("/text")
+async def get_latest_story_text(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
+) -> APIResponse:
+    """Returns current version of a story text for the current user
+
+    Args:
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
+
+    Returns:
+        APIResponse: object containing text object wrapped in APIResponse class
+    """
+    if DEBUG:
+        console_display.show_debug_message(
+            message_to_show="get_latest_story_text() called"
+        )
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"Reading story text from mongodb for user_id:{current_user.user_id}"
+            )
+        db_storage = database.StoryStorage()
+        retrieve_reponse = await db_storage.return_latest_story_text(
+            user_id=current_user.user_id
+        )
+        retrieve_reponse.show()
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured retrieving story text from mongodb"
+        )
+        print(exception_object)
+        raise
+
+    return APIResponse(
+        data={"text": retrieve_reponse},
         code=200,
         message="Success",
     )
@@ -495,6 +578,6 @@ async def delete_all_saves(
     )
 
 
-# todo: route - get a given save document of the story tree
-
-# todo: route - delete a story
+# todo: route - return concatenated story text
+# give the APi a tree object and parse it recursivley to generate a text
+# todo: route - get a given save text of the story tree

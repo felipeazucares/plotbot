@@ -158,6 +158,46 @@ class StoryStorage:
             raise
         return str(ObjectId(self.save_response.inserted_id))
 
+    async def return_a_save_document(self, user_id: str, document_id: str) -> Story:
+        """Returns a specified story document for user in mongodb
+
+        Args:
+            user_id (str): hashed salted userid
+            document_id: mongo _id of save document
+
+        Returns:
+            Story: object containing requested save doc tree
+        """
+        self.user_id = user_id
+        self.document_id = document_id
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"return_a_save_document({self.user_id},{self.document_id}) called"
+            )
+        try:
+            self.last_save = await self.story_collection.find_one(
+                {"_id": ObjectId(self.document_id)}
+            )
+
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show=f"Exception occured retrieving save for user_id: {self.user_id}"
+            )
+            print(exception_object)
+            raise
+        if self.last_save is not None:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="Save document found"
+                )
+            # self.last_save = Story(**self.last_save)
+        else:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="No save document found"
+                )
+        return self.last_save
+
     async def return_latest_save_document(self, user_id: str) -> Story:
         """Returns latest story document or user in mongodb
 
@@ -246,6 +286,55 @@ class StoryStorage:
                 )
                 print(exception_object)
                 raise
+        return self.tree
+
+    async def return_a_story(self, user_id: str, document_id: str) -> Tree:
+        """return the tree found in the specified save document
+
+        Args:
+            user_id (str): hashed salted user_id
+            document_id (str): mongodb _id value
+
+        Returns:
+            Tree: Story tree object found in latest save
+        """
+        self.user_id = user_id
+        self.document_id = document_id
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"return_a_story({self.user_id},{self.document_id}) called"
+            )
+        try:
+            self.last_save = await self.return_a_save_document(
+                user_id=self.user_id, document_id=self.document_id
+            )
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
+            )
+            print(exception_object)
+            raise
+        # get the tree dict from the saved document
+        if self.last_save is not None:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="Story save exists - rebuilding tree"
+                )
+            try:
+                self.last_save_tree = self.last_save["tree"]
+                self.tree = self.build_tree_from_dict(tree_dict=self.last_save_tree)
+            except Exception as exception_object:
+                self.console_display.show_exception_message(
+                    message_to_show=f"Exception occured rebuilding tree structure from last save, last_save: {self.last_save}"
+                )
+                print(exception_object)
+                raise
+        else:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="No Story tree found. Returning empty tree"
+                )
+            self.tree = Tree()
         return self.tree
 
     async def add_text_to_story_tree(self, text: str, user_id: str) -> str:
@@ -383,11 +472,6 @@ class StoryStorage:
         self.loaded_tree = loaded_tree  # the tree structure returned from mongo
         self.new_tree = new_tree  # tree we're building
         self.node_id = node_id  # the node to add
-
-        # if DEBUG:
-        #     self.console_display.show_debug_message(
-        #         message_to_show=f"add_a_node(loaded_tree:{self.loaded_tree},new_tree:{self.new_tree},node_id:{self.node_id}) called"
-        #     )
 
         # get name of node that's been passed to the routine
         try:
@@ -590,7 +674,7 @@ class StoryStorage:
             )
         try:
             self.delete_result = await self.story_collection.delete_one(
-                {"user_id": self.user_id, "_id": self.document_id}
+                {"user_id": self.user_id, "_id": ObjectId(self.document_id)}
             )
             # delete_result object contains a deleted_count & acknowledged properties
         except Exception as exception_object:
