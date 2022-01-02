@@ -250,6 +250,102 @@ async def get(
     )
 
 
+@app.get("/story")
+async def get_latest_story(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
+) -> APIResponse:
+    """Returns current version of a story for the current user
+
+    Args:
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
+
+    Returns:
+        APIResponse: object containing Story object wrapped in APIResponse class
+    """
+    if DEBUG:
+        console_display.show_debug_message(message_to_show="get_latest_story() called")
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"Reading story froom mongodb for user_id:{current_user.user_id}"
+            )
+        db_storage = database.StoryStorage()
+        retrieve_reponse = await db_storage.return_latest_story(
+            user_id=current_user.user_id
+        )
+        retrieve_reponse.show()
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured retrieving story from mongodb"
+        )
+        print(exception_object)
+        raise
+
+    return APIResponse(
+        data={"story": retrieve_reponse},
+        code=200,
+        message="Success",
+    )
+
+
+@app.post("/story")
+async def save_text(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
+    request: StoryPayload = Body(...),
+) -> APIResponse:
+    """save provided text snippet in the next child node of the story tree
+
+    Args:
+        current_user (UserDetails, optional): logged in user details.
+        request (StoryPayload, optional): Payload model containing text to store.
+        Defaults to Body(...).
+
+    Raises:
+        HTTPException: for an errored response from the generator model
+
+    Returns:
+        APIResponse: data attribute contains the generated text or an error
+    """
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show="Writing text to mongodb story tree"
+            )
+        db_storage = database.StoryStorage()
+        save_reponse = await db_storage.add_text_to_story_tree(
+            text=request.text, user_id=current_user.user_id
+        )
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured storing text in mongodb"
+        )
+        print(exception_object)
+        raise
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show="Writing text to mongodb story tree"
+            )
+        db_storage = database.StoryStorage()
+        save_reponse = await db_storage.add_text_to_story_tree(
+            text=request.text, user_id=current_user.user_id
+        )
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured storing text in mongodb"
+        )
+        print(exception_object)
+        raise
+
+    return APIResponse(
+        data={"save_info": save_reponse, "username": current_user.username},
+        code=200,
+        message="Success",
+    )
+
+
 @app.post("/text")
 async def generate_text(
     current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
@@ -298,50 +394,48 @@ async def generate_text(
     )
 
 
-@app.post("/save")
-async def save_text(
-    current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
-    request: StoryPayload = Body(...),
+@app.get("/save")
+async def get_saves(
+    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
 ) -> APIResponse:
-    """save provided text snippet in the next child node of the story tree
+    """Returns a list of the saved story document ids for current_user
 
     Args:
-        current_user (UserDetails, optional): logged in user details.
-        request (StoryPayload, optional): Payload model containing text to store.
-        Defaults to Body(...).
-
-    Raises:
-        HTTPException: for an errored response from the generator model
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
 
     Returns:
-        APIResponse: data attribute contains the generated text or an error
+        APIResponse: object containing listy of save document ids
     """
+    if DEBUG:
+        console_display.show_debug_message(message_to_show="get_saves() called")
 
     try:
         if DEBUG:
             console_display.show_debug_message(
-                message_to_show="Writing text to mongodb story tree"
+                message_to_show=f"Getting list of saves for :{current_user.user_id}"
             )
         db_storage = database.StoryStorage()
-        save_reponse = await db_storage.add_text_to_story_tree(
-            text=request.text, user_id=current_user.user_id
+        retrieve_reponse = await db_storage.list_all_story_saves(
+            user_id=current_user.user_id
         )
     except Exception as exception_object:
         console_display.show_exception_message(
-            message_to_show="Error occured storing text in mongodb"
+            message_to_show="Error occured retrieving list of documents from mongodb"
         )
         print(exception_object)
         raise
 
     return APIResponse(
-        data={"save_info": save_reponse, "username": current_user.username},
+        data={"document_ids": retrieve_reponse},
         code=200,
         message="Success",
     )
 
 
-# todo: route - get the latest story tree
+# todo: get a list of stories
 
-# todo: route - get a given version of the story tree
+# todo: route - get a given save document of the story tree
 
-# todo: route - delete a story tree
+# todo: route - delete a story
+
+# todo: delete all stories
