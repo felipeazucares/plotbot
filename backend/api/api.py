@@ -432,11 +432,51 @@ async def get_saves(
     )
 
 
+@app.delete("/save/{document_id}")
+async def delete_a_save(
+    document_id: str,
+    current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
+) -> APIResponse:
+    """Deletess a specified story document associated with the current user
+
+    Args:
+        current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:writer"]).
+        document_id: document that we want to delete
+
+    Returns:
+        APIResponse: object containing number of docs deleted
+    """
+    if DEBUG:
+        console_display.show_debug_message(message_to_show="delete_a_save() called")
+
+    try:
+        if DEBUG:
+            console_display.show_debug_message(
+                message_to_show=f"deleting {document_id} save for :{current_user.user_id}"
+            )
+        db_storage = database.StoryStorage()
+        retrieve_reponse = await db_storage.delete_a_story_save(
+            user_id=current_user.user_id, document_id=document_id
+        )
+    except Exception as exception_object:
+        console_display.show_exception_message(
+            message_to_show="Error occured a document from mongodb"
+        )
+        print(exception_object)
+        raise
+
+    return APIResponse(
+        data={"deletions": retrieve_reponse},
+        code=200,
+        message="Success",
+    )
+
+
 @app.delete("/save")
 async def delete_all_saves(
-    current_user: UserDetails = Security(get_current_user, scopes=["story:reader"])
+    current_user: UserDetails = Security(get_current_user, scopes=["story:writer"])
 ) -> APIResponse:
-    """Delets all the sotry documents associated with the current user
+    """Deletes all the sotry documents associated with the current user
 
     Args:
         current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
@@ -473,5 +513,3 @@ async def delete_all_saves(
 # todo: route - get a given save document of the story tree
 
 # todo: route - delete a story
-
-# todo: delete all stories

@@ -575,6 +575,35 @@ class StoryStorage:
             raise
         return self.delete_result.deleted_count
 
+    async def delete_a_story_save(self, user_id: str, document_id: str) -> int:
+        """delete all the saved story documents for user_id
+
+        Args:
+            user_id (str): hashed salted user_id string
+            document_id : id of the doc we want to delete
+
+        Returns:
+            int: count of documents deleted from database
+        """
+        self.user_id = user_id
+        self.document_id = document_id
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"delete_a_story_save({self.user_id},{self.document_id}) called"
+            )
+        try:
+            self.delete_result = await self.story_collection.delete_one(
+                {"user_id": self.user_id, "_id": self.document_id}
+            )
+            # delete_result object contains a deleted_count & acknowledged properties
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show=f"Exception occured deleting a save from the database user_id was: {self.user_id}, document_id: {self.document_id}"
+            )
+            print(exception_object)
+            raise
+        return self.delete_result.deleted_count
+
     async def return_specified_save_document(self, document_id: str) -> Story:
         """return a story object from a specified save document
 
