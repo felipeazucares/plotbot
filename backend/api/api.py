@@ -404,7 +404,7 @@ async def get_saves(
         current_user (UserDetails, optional): logged in user details. Defaults to Security(get_current_user, scopes=["story:reader"]).
 
     Returns:
-        APIResponse: object containing listy of save document ids
+        APIResponse: object containing list of save document ids
     """
     if DEBUG:
         console_display.show_debug_message(message_to_show="get_saves() called")
