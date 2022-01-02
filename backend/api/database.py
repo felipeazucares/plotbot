@@ -120,6 +120,10 @@ class StoryStorage:
         self.last_save_story = None
         self.current_leaf = None
         self.new_node_id = None
+        self.text_to_return = None
+        self.story_text = None
+        self.current_node_id = None
+        self.current_node = None
 
     async def save_story(self, story: Story) -> str:
         """save the story provided to mongo db
@@ -332,7 +336,11 @@ class StoryStorage:
                 print(exception_object)
                 raise
             # now recursively parse the given tree
-            text = traverse_tree(tree=self.last_save)
+            self.text_to_return = self.traverse_tree(
+                tree=self.tree,
+                story_text="",
+                current_node_id=self.tree.root,
+            )
         else:
             if DEBUG:
                 self.console_display.show_debug_message(
@@ -346,24 +354,72 @@ class StoryStorage:
                 )
                 print(exception_object)
                 raise
-        return self.tree
+        return self.text_to_return
 
-    def traverse_tree(tree: Tree, story_text: str, current_node: str) -> str:
+    def traverse_tree(self, tree: Tree, story_text: str, current_node_id: str) -> str:
         """recursive routine to traverse a given tree and concatenate text data from each node
 
         Args:
             tree (Tree): story tree to traverse containing data with text attribs
             story_text (str): string to results of contcatenation of all text data in tree
-            current_node (str): current node that we are processing in tree
+            current_node_id (str): current node that we are processing in tree
 
         Returns:
             str: string to contain contcatenation of all text data in tree
         """
-        # get text from current node and add to the story
-        # see if the current node has any children
-        # if not then base case return.
-        # if it does have children then get successor id and call traverse_tree
-        return None
+
+        self.story_text = story_text
+        self.current_node_id = current_node_id
+        self.tree = tree
+        self.current_node = None
+
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"traverse_tree(story_text:{self.story_text},current_node_id:{self.current_node_id},tree:{self.tree}) called"
+            )
+
+        # get current node
+        try:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="getting current_node"
+                )
+            self.current_node = self.tree.get_node(self.current_node_id)
+
+        except Exception as exception_object:
+            self.console_display.show_exception_message(
+                message_to_show="Exception occured getting current node:{self.current_node_id}"
+            )
+            print(exception_object)
+            raise
+
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"Adding text {self.current_node.data['text']} to story_text"
+            )
+        # add the text from the current node to the story_text string
+        self.story_text = self.story_text + " " + self.current_node.data["text"]
+        # check for children
+        if self.tree.children(self.current_node_id):
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show=f"Child detected:{self.tree.children(self.current_node_id)[0].identifier}"
+                )
+            self.traverse_tree(
+                tree=self.tree,
+                story_text=self.story_text,
+                current_node_id=self.tree.children(self.current_node_id)[
+                    0
+                ].identifier,  # each node has only one child so far
+            )
+
+        if DEBUG:
+            self.console_display.show_debug_message(message_to_show="base case")
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"self.story_text:{self.story_text}"
+            )
+        return self.story_text
 
     async def return_a_story(self, user_id: str, document_id: str) -> Tree:
         """return the tree found in the specified save document
