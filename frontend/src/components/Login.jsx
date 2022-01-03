@@ -18,28 +18,23 @@ import {
 } from "@chakra-ui/react";
 
 const TodosContext = React.createContext({
-  todos: [], fetchTodos: () => {}
+  todos: [], tryLogin: () => {}
 })
 
 export default function Todos() {
   const [todos, responseData] = useState([])
-  const fetchTodos = async () => {
+  const tryLogin = async () => {
     const response = await fetch("http://localhost:9000/")
     const todos = await response.json()
     console.log(todos);
     responseData(todos.data)
   }
   useEffect(() => {
-    fetchTodos()
+    tryLogin()
   }, [])
   return (
     <TodosContext.Provider value={{todos, responseData}}>
-      <Button size="lg" colorScheme="blue">login</Button>
-      {/* <Stack spacing={5}>
-        {todos.map((todo) => (
-          <b>{todo.item}</b>
-        ))}
-      </Stack> */}
+      <Button size="lg" onClick={tryLogin} colorScheme="blue">login</Button>
     </TodosContext.Provider>
   )
 }
