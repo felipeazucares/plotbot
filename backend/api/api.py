@@ -55,7 +55,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 timezone(tzname[0]).localize(datetime.now())
 # setup helper for formatting debug messages
 console_display = ConsoleDisplay()
-origins = ["http://localhost:9000", "localhost:9000"]
+origins = ["http://localhost:9000", "localhost:9000", "http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,

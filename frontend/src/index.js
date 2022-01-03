@@ -3,11 +3,19 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// import { ThemeProvider } from "@chakra-ui/core";
+import OrgChart from "./components/OrgChart";
+import { ChakraProvider } from "@chakra-ui/react";
+import Header from "./components/Header";
+import Login from "./components/Login";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/* <App /> */}
+    <ChakraProvider>
+      <Header />
+      <Login></Login>
+      <OrgChart></OrgChart>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
