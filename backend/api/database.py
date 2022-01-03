@@ -44,9 +44,7 @@ class UserStorage:
                 message_to_show=f"get_user_details_by_username({self.username}) called"
             )
         try:
-            user_deets = await self.user_collection.find_one(
-                {"username": self.username}
-            )
+            user_deets = await self.user_collection.find_one({"username": self.username})
             if user_deets is not None:
                 self.user_details = UserDetails(**user_deets)
             else:
@@ -124,6 +122,7 @@ class StoryStorage:
         self.story_text = None
         self.current_node_id = None
         self.current_node = None
+        self.parent_id = None
 
     async def save_story(self, story: Story) -> str:
         """save the story provided to mongo db
@@ -257,9 +256,7 @@ class StoryStorage:
                 message_to_show=f"return_latest_story({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(
-                user_id=self.user_id
-            )
+            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -311,9 +308,7 @@ class StoryStorage:
                 message_to_show=f"return_latest_story_text({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(
-                user_id=self.user_id
-            )
+            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -401,17 +396,19 @@ class StoryStorage:
         self.story_text = self.story_text + " " + self.current_node.data["text"]
         # check for children
         if self.tree.children(self.current_node_id):
-            if DEBUG:
-                self.console_display.show_debug_message(
-                    message_to_show=f"Child detected:{self.tree.children(self.current_node_id)[0].identifier}"
-                )
-            self.traverse_tree(
-                tree=self.tree,
-                story_text=self.story_text,
-                current_node_id=self.tree.children(self.current_node_id)[
-                    0
-                ].identifier,  # each node has only one child so far
-            )
+            # loop through all children checking to see which one has children - should be only one
+            for child in self.tree.children(self.current_node_id):
+                if DEBUG:
+                    self.console_display.show_debug_message(
+                        message_to_show=f"Child detected:{child.identifier}"
+                    )
+                # when we find one with children we pass that to the next call of the routine
+                if self.tree.children(child.identifier):
+                    self.traverse_tree(
+                        tree=self.tree,
+                        story_text=self.story_text,
+                        current_node_id=child.identifier,  # each node has only one child so far
+                    )
 
         if DEBUG:
             self.console_display.show_debug_message(message_to_show="base case")
@@ -470,9 +467,22 @@ class StoryStorage:
             self.tree = Tree()
         return self.tree
 
-    async def add_text_to_story_tree(self, text: str, user_id: str) -> str:
+    async def add_text_to_story_tree(
+        self, text: str, user_id: str, parent_id: str
+    ) -> str:
+        """Creates a new tree node and adds text to its data property & saves it to db
+
+        Args:
+            text (str): text to store in the node
+            user_id (str): current user id
+            parent_id (str): node id of new node's parent
+
+        Returns:
+            AddNodeResponse: wrapper class containing node id, tree and document save id
+        """
         self.text = text
         self.user_id = user_id
+        self.parent_id = parent_id
         if DEBUG:
             self.console_display.show_debug_message(
                 message_to_show=f"add_text_to_story_tree({self.text},{self.user_id}) called"
@@ -502,12 +512,19 @@ class StoryStorage:
                     message_to_show=f"current leaf is: {self.current_leaf[0].identifier})"
                 )
             # add the new text node
-            self.new_node_id = self.last_save_story.create_node(
-                parent=self.current_leaf[0].identifier, data={"text": self.text}
-            )
+            try:
+                self.new_node_id = self.last_save_story.create_node(
+                    parent=self.parent_id, data={"text": self.text}
+                )
+            except Exception as exception_object:
+                self.console_display.show_exception_message(
+                    message_to_show="Exception occured adding a node to tree"
+                )
+                print(exception_object)
+                raise
             if DEBUG:
                 self.console_display.show_debug_message(
-                    message_to_show=f"adding node id:{self.new_node_id.identifier} to {self.current_leaf[0].identifier})"
+                    message_to_show=f"adding node id:{self.new_node_id.identifier} to {self.parent_id})"
                 )
         else:
             # no pre-existing save so we'll create a new node without a parent
@@ -721,9 +738,7 @@ class StoryStorage:
         if self.children is not None:
 
             if DEBUG:
-                self.console_display.show_debug_message(
-                    message_to_show="recursive call"
-                )
+                self.console_display.show_debug_message(message_to_show="recursive call")
             for self.child_id in self.children:
                 self.add_a_node(
                     tree_id=self.tree_id,

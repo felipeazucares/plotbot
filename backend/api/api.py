@@ -305,9 +305,7 @@ async def get_a_story_object(
         APIResponse: object containing Story object wrapped in APIResponse class
     """
     if DEBUG:
-        console_display.show_debug_message(
-            message_to_show="get_a_story_object() called"
-        )
+        console_display.show_debug_message(message_to_show="get_a_story_object() called")
 
     try:
         if DEBUG:
@@ -333,8 +331,9 @@ async def get_a_story_object(
     )
 
 
-@app.post("/story")
+@app.post("/story/")
 async def save_text(
+    parent_id: str = None,
     current_user: UserDetails = Security(get_current_user, scopes=["story:writer"]),
     request: StoryPayload = Body(...),
 ) -> APIResponse:
@@ -344,6 +343,7 @@ async def save_text(
         current_user (UserDetails, optional): logged in user details.
         request (StoryPayload, optional): Payload model containing text to store.
         Defaults to Body(...).
+        pranet_id (str): id of parent node - if None then assumed to be root
 
     Raises:
         HTTPException: for an errored response from the generator model
@@ -351,7 +351,6 @@ async def save_text(
     Returns:
         APIResponse: data attribute contains the generated text or an error
     """
-
     try:
         if DEBUG:
             console_display.show_debug_message(
@@ -359,7 +358,7 @@ async def save_text(
             )
         db_storage = database.StoryStorage()
         save_reponse = await db_storage.add_text_to_story_tree(
-            text=request.text, user_id=current_user.user_id
+            text=request.text, user_id=current_user.user_id, parent_id=parent_id
         )
     except Exception as exception_object:
         console_display.show_exception_message(
@@ -440,9 +439,7 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(
-                message_to_show="generating text snippet"
-            )
+            console_display.show_debug_message(message_to_show="generating text snippet")
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,
