@@ -11,11 +11,11 @@ function App() {
   return (
     <PlotbotContext.Provider>
       <div className="App">
-        <div>
+        <div className="App-header">
           <Header />
         </div>
-        <div>
-          <LoginForm></LoginForm>
+        <div className="App-container">
+          <LoginForm className="App-loginform"></LoginForm>
         </div>
         <div>
           <OrgChart></OrgChart>
