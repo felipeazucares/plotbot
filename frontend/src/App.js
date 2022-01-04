@@ -18,12 +18,14 @@ function App() {
           <Header />
         </div>
         <div className="App-row-container">
-          <section className="App-tree-container">
-            <TreeContainer></TreeContainer>
-          </section>
-          <section className="App-text-container">
+          <article className="App-tree-container">
+            <div className="App-tree-column">
+              <TreeContainer className="App-tree-element"></TreeContainer>
+            </div>
+          </article>
+          <aside className="App-text-container">
             <TextContainer></TextContainer>
-          </section>
+          </aside>
         </div>
         <div>
           <ControlsContainer></ControlsContainer>

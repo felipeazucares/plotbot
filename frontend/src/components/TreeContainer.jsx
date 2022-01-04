@@ -2,7 +2,7 @@ import React from "react"
 
 export default function TreeContainer() {
 return (
-    <div>
+    <div className="App-tree-element">
       TreeContainer Placeholder
     </div>
   );

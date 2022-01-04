@@ -1,6 +1,11 @@
 import React from "react"
 import {
-    Button, Slider
+    Button, 
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderMark,
 } from "@chakra-ui/react"
 
 export default function ControlsContainer() {
@@ -10,10 +15,13 @@ return (
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <Button className="flex_button"colorScheme="blue">get texts</Button>  
       <Button className="flex_button" colorScheme="blue">get story</Button> 
-      {/* <button type="button">logon</button>
-      <button type="button">logoff</button>
-      <button type="button">get story</button>
-      <button type="button">get text</button> */}
+       <Slider aria-label='slider-ex-1' defaultValue={30}>
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb />
+      </Slider>    
      </div>
+
   );
 }
