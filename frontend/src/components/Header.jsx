@@ -9,11 +9,9 @@ const Header = () => {
       justify="space-between"
       wrap="wrap"
       padding="0.5rem"
-      bg="gray.400"
     >
       <Flex align="center" mr={5}>
-        <Heading as="h1" size="lg">Building Interactive Fiction with Plotter</Heading>
-        <Divider />
+        <Heading as="h1" size="lg">Building Interactive Fiction with PlotBot</Heading>
       </Flex>
     </Flex>
   );
