@@ -18,11 +18,15 @@ function App() {
           <Header />
         </div>
         <div className="App-row-container">
-          <TreeContainer className="App-row-items"></TreeContainer>
-          <TextContainer className="App-row-items"></TextContainer>
+          <section className="App-tree-container">
+            <TreeContainer></TreeContainer>
+          </section>
+          <section className="App-text-container">
+            <TextContainer></TextContainer>
+          </section>
         </div>
-        <div className="App-row-container">
-          <ControlsContainer className="App-row-items"></ControlsContainer>
+        <div>
+          <ControlsContainer></ControlsContainer>
         </div>
       </div>
     </PlotbotContext.Provider>

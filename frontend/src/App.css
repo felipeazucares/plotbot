@@ -1,16 +1,35 @@
+.flex_button {
+  flex-basis: 25%;
+  margin: 10px;
+}
+
 .App {
-  text-align: center;
-  border-style: dotted;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border: 1px dashed rgb(99, 89, 89);
 }
 .App-row-container {
   display: flex;
-  justify-content: center;
-  border-width: thin;
-  border: #61dafb;
+  margin: 0;
+  border: 1px dashed rgb(99, 89, 89);
+  padding: 20px;
 }
 
-.App-row-items {
-  flex-grow: 1;
+.App-tree-container {
+  flex-basis: 50%;
+  order: 1;
+  padding: 20px;
+  height: 100%;
+  border: 1px dashed rgb(99, 89, 89);
+}
+
+.App-text-container {
+  flex-basis: 50%;
+  order: 2;
+  padding: 20px;
+  height: 100%;
+  border: 1px dashed rgb(99, 89, 89);
 }
 
 .App-logo {
