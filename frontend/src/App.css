@@ -5,8 +5,12 @@
 .App-row-container {
   display: flex;
   justify-content: center;
+  border-width: thin;
+  border: #61dafb;
+}
+
+.App-row-items {
   flex-grow: 1;
-  border-style: solid;
 }
 
 .App-logo {
