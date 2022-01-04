@@ -15,7 +15,6 @@ import {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const noUsernameError = username === ""
     const noPasswordError = password === ""
-    let loginMessage = ""
     
     const handleUsernameChange = (inputValue) => setUsername(inputValue.target.value)
     const handlePasswordChange = (inputValue) => setPassword(inputValue.target.value)
@@ -37,7 +36,6 @@ import {
                 setIsLoggedIn(true)
             } else {
                 console.error(`Login failed with status:${response.status} - ${response.statusText}`)
-                loginMessage="Unable to login"
             }
         }
         catch(error){
@@ -74,7 +72,6 @@ import {
                     <FormHelperText>
                     </FormHelperText>
                 )}
-                <div>{loginMessage}</div>
                 <Button type="submit" colorScheme="blue" size="lg">login
                 </Button>
             </FormControl>

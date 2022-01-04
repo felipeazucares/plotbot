@@ -2,6 +2,9 @@ import React from "react";
 // import logo from "./logo.svg";
 import "./App.css";
 import LoginForm from "./components/LoginForm";
+import TreeContainer from "./components/TreeContainer";
+import ControlsContainer from "./components/ControlsContainer";
+import TextContainer from "./components/TextContainer";
 import OrgChart from "./components/OrgChart";
 import Header from "./components/Header";
 
@@ -14,11 +17,12 @@ function App() {
         <div className="App-header">
           <Header />
         </div>
-        <div className="App-container">
-          <LoginForm className="App-loginform"></LoginForm>
+        <div className="App-row-container">
+          <TreeContainer></TreeContainer>
+          <TextContainer></TextContainer>
         </div>
-        <div>
-          <OrgChart></OrgChart>
+        <div className="App-row-container">
+          <ControlsContainer></ControlsContainer>
         </div>
       </div>
     </PlotbotContext.Provider>
