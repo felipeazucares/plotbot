@@ -29,8 +29,8 @@ return (
       <SliderMark value={1} mt='1' ml='-2.5' fontSize='sm'>
         Walter Kronkite
       </SliderMark>
-      <SliderMark value={50} mt='1' ml='-2.5' fontSize='sm'>
-        Hemmingway
+      <SliderMark value={47} mt='1' ml='-2.5' fontSize='sm'>
+        Ernest Hemmingway
       </SliderMark>
       <SliderMark value={93.8} mt='1' ml='-2.5' fontSize='sm'>
         Nicholas Cage

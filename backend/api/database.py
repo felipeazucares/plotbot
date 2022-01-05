@@ -44,7 +44,9 @@ class UserStorage:
                 message_to_show=f"get_user_details_by_username({self.username}) called"
             )
         try:
-            user_deets = await self.user_collection.find_one({"username": self.username})
+            user_deets = await self.user_collection.find_one(
+                {"username": self.username}
+            )
             if user_deets is not None:
                 self.user_details = UserDetails(**user_deets)
             else:
@@ -256,7 +258,9 @@ class StoryStorage:
                 message_to_show=f"return_latest_story({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
+            self.last_save = await self.return_latest_save_document(
+                user_id=self.user_id
+            )
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -291,7 +295,7 @@ class StoryStorage:
                 )
                 print(exception_object)
                 raise
-        return self.tree
+        return self.tree.to_dict(with_data=True)
 
     async def return_latest_story_text(self, user_id: str) -> str:
         """return the story text by traversing the latest tree
@@ -308,7 +312,9 @@ class StoryStorage:
                 message_to_show=f"return_latest_story_text({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
+            self.last_save = await self.return_latest_save_document(
+                user_id=self.user_id
+            )
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -465,7 +471,7 @@ class StoryStorage:
                     message_to_show="No Story tree found. Returning empty tree"
                 )
             self.tree = Tree()
-        return self.tree
+        return self.tree.to_dict(with_data=True)
 
     async def add_text_to_story_tree(
         self, text: str, user_id: str, parent_id: str
@@ -738,7 +744,9 @@ class StoryStorage:
         if self.children is not None:
 
             if DEBUG:
-                self.console_display.show_debug_message(message_to_show="recursive call")
+                self.console_display.show_debug_message(
+                    message_to_show="recursive call"
+                )
             for self.child_id in self.children:
                 self.add_a_node(
                     tree_id=self.tree_id,

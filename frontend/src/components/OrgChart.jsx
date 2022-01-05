@@ -29,22 +29,12 @@ const orgChart = {
           attributes: {
             text: "Assembly",
           },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
         },
         {
           name: "Option 6",
           attributes: {
             text: "Assembly",
           },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
         },
       ],
     },
@@ -53,60 +43,12 @@ const orgChart = {
       attributes: {
         text: "There was a fire in the house and I called the police.",
       },
-      children: [
-        {
-          name: "Foreman",
-          attributes: {
-            text: "Fabrication",
-          },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
-        },
-        {
-          name: "Foreman",
-          attributes: {
-            text: "Assembly",
-          },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
-        },
-      ],
     },
     {
       name: "Option 3",
       attributes: {
         text: "There was a fire in the house and so I laughed.",
       },
-      children: [
-        {
-          name: "Foreman",
-          attributes: {
-            text: "Fabrication",
-          },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
-        },
-        {
-          name: "Foreman",
-          attributes: {
-            text: "Assembly",
-          },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
-        },
-      ],
     },
   ],
 };
