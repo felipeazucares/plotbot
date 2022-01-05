@@ -15,12 +15,7 @@ return (
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <Button className="flex_button"colorScheme="blue">get texts</Button>  
       <Button className="flex_button" colorScheme="blue">get story</Button> 
-       <Slider aria-label='slider-ex-1' defaultValue={30}>
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>    
+
      </div>
 
   );

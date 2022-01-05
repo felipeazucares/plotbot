@@ -4,6 +4,7 @@ import "./App.css";
 import LoginForm from "./components/LoginForm";
 import TreeContainer from "./components/TreeContainer";
 import ControlsContainer from "./components/ControlsContainer";
+import SliderContainer from "./components/SliderContainer";
 import TextContainer from "./components/TextContainer";
 import OrgChart from "./components/OrgChart";
 import Header from "./components/Header";
@@ -18,17 +19,20 @@ function App() {
           <Header />
         </div>
         <div className="App-row-container">
-          <article className="App-content-container">
+          <div className="App-content-container">
             <div className="App-content-column">
               <TreeContainer className="App-content-element"></TreeContainer>
             </div>
-          </article>
-          <aside className="App-text-container">
-            <TextContainer></TextContainer>
-          </aside>
+          </div>
+          <div className="App-content-container">
+            <div className="App-content-column">
+              <TextContainer className="App-content-element"></TextContainer>
+            </div>
+          </div>
         </div>
         <div>
           <ControlsContainer></ControlsContainer>
+          <SliderContainer></SliderContainer>
         </div>
       </div>
     </PlotbotContext.Provider>
