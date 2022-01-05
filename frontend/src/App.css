@@ -19,7 +19,7 @@
   padding: 20px;
 }
 
-.App-tree-container {
+.App-content-container {
   flex-basis: 50%;
   order: 1;
   padding: 20px;
@@ -27,14 +27,14 @@
   border: 1px dashed rgb(99, 89, 89);
 }
 
-.App-tree-column {
+.App-content-column {
   display: flex;
   flex-direction: column;
   border: 1px dashed rgb(99, 89, 89);
   height: 75vh;
 }
 
-.App-tree-element {
+.App-content-element {
   border: 1px dashed rgb(99, 89, 89);
   flex: 1;
 }

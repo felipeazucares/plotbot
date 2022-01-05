@@ -18,9 +18,9 @@ function App() {
           <Header />
         </div>
         <div className="App-row-container">
-          <article className="App-tree-container">
-            <div className="App-tree-column">
-              <TreeContainer className="App-tree-element"></TreeContainer>
+          <article className="App-content-container">
+            <div className="App-content-column">
+              <TreeContainer className="App-content-element"></TreeContainer>
             </div>
           </article>
           <aside className="App-text-container">
