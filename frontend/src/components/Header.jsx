@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Text, Heading } from '@chakra-ui/react'
 const Header = () => {
   return (
     // <Flex
@@ -13,9 +13,12 @@ const Header = () => {
     //     <Heading as="h1" size="lg">Building Interactive Fiction with PlotBot</Heading>
     //   </Flex>
     // </Flex>
-    <h1>PlotterBot - interactive fiction powered by AiTextGen & MongoDb</h1>
-    // <h2>Interactive fiction powered by AiTextGen & Mongodb</h2>
+    <span>
+      <Heading fontSize='5xl'>PlotterBot</Heading>
+      <Text fontSize='xs'>Interactive fiction powered by AiTextGen & Mongodb</Text>
+    </span>
   );
 };
+
 
 export default Header;

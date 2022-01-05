@@ -8,7 +8,7 @@
   flex-direction: column;
   margin: 0;
   border: 1px dashed rgb(99, 89, 89);
-  height: 100%;
+  height: 100vh;
 }
 
 .App-row-container {
@@ -19,8 +19,24 @@
   padding: 20px;
 }
 
-.App-content-container {
-  flex-basis: 50%;
+.App-controls-container {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  border: 1px dashed rgb(99, 89, 89);
+  padding: 20px;
+}
+
+.App-content-container-75 {
+  flex-basis: 75%;
+  order: 1;
+  padding: 20px;
+  height: 100%;
+  border: 1px dashed rgb(99, 89, 89);
+}
+
+.App-content-container-25 {
+  flex-basis: 25%;
   order: 1;
   padding: 20px;
   height: 100%;
@@ -31,7 +47,6 @@
   display: flex;
   flex-direction: column;
   border: 1px dashed rgb(99, 89, 89);
-  height: 75vh;
 }
 
 .App-content-element {
@@ -42,8 +57,12 @@
   flex-basis: 50%;
   order: 2;
   padding: 20px;
-  height: 100%;
   border: 1px dashed rgb(99, 89, 89);
+}
+
+.App-header {
+  text-align: center;
+  font-size: calc(10px + 2vmin);
 }
 
 .App-logo {
@@ -55,11 +74,6 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
-
-.App-header {
-  text-align: center;
-  font-size: calc(10px + 2vmin);
 }
 
 .App-link {
