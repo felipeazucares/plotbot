@@ -18,7 +18,7 @@ from pytz import timezone
 
 # import fastapi
 from treelib import Tree
-from fastapi import FastAPI, HTTPException, Body, Depends, Security, status
+from fastapi import FastAPI, HTTPException, Body, Depends, Security, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import (
     OAuth2PasswordBearer,
@@ -113,7 +113,11 @@ async def login_for_access_token(
         data={"sub": user.user_id, "scopes": form_data.scopes},
         expires_delta=access_token_expires,
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    content = {"access_token": access_token, "token_type": "bearer"}
+    response = JSONResponse(content)
+    response.set_cookie(key="token", value=access_token)
+    return response
+    # return {"access_token": access_token, "token_type": "bearer"}
 
 
 async def get_current_user_token(
@@ -171,11 +175,12 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        print(f"token{token}")
+        print(f"token:{token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
+
         token_scopes = payload.get("scopes", [])
         expires = payload.get("exp")
         token_data = TokenData(scopes=token_scopes, username=user_id, expires=expires)
