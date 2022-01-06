@@ -27,8 +27,6 @@ from fastapi.security import (
 )
 from fastapi.responses import JSONResponse
 
-# from fastapi_jwt_auth import AuthJWT
-# from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from pydantic.error_wrappers import ValidationError
 from aitextgen import aitextgen
@@ -69,16 +67,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+oauth = Authentication()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(
+oauth2_scheme = oauth.OAuth2PasswordBearerWithCookie(
     tokenUrl="login",
     scopes={
         "story:reader": "Read story details",
         "story:writer": "write story details",
     },
 )
-oauth = Authentication()
 
 # ----------------------------
 #     Authenticaton routines
@@ -87,6 +85,7 @@ oauth = Authentication()
 
 @app.post("/login", response_model=Token)
 async def login_for_access_token(
+    response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> dict:
     """handle oauth login procedure
@@ -113,11 +112,10 @@ async def login_for_access_token(
         data={"sub": user.user_id, "scopes": form_data.scopes},
         expires_delta=access_token_expires,
     )
-    content = {"access_token": access_token, "token_type": "bearer"}
-    response = JSONResponse(content)
-    response.set_cookie(key="token", value=access_token)
-    return response
-    # return {"access_token": access_token, "token_type": "bearer"}
+    response.set_cookie(
+        key="access_token", value=f"Bearer {access_token}", httponly=True
+    )  # set HttpOnly cookie in response
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 async def get_current_user_token(
@@ -315,7 +313,9 @@ async def get_a_story_object(
         APIResponse: object containing Story object wrapped in APIResponse class
     """
     if DEBUG:
-        console_display.show_debug_message(message_to_show="get_a_story_object() called")
+        console_display.show_debug_message(
+            message_to_show="get_a_story_object() called"
+        )
 
     try:
         if DEBUG:
@@ -449,7 +449,9 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(message_to_show="generating text snippet")
+            console_display.show_debug_message(
+                message_to_show="generating text snippet"
+            )
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,

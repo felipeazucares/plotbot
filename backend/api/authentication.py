@@ -8,6 +8,7 @@ import os
 from time import tzname
 from datetime import timedelta, datetime
 from typing import Optional
+from typing import Dict
 import redis
 from jose.exceptions import ExpiredSignatureError
 from jose import jwt
@@ -16,6 +17,10 @@ from passlib.context import CryptContext
 from api.helpers import ConsoleDisplay
 import api.database as database
 from fastapi import HTTPException, status
+from fastapi.security import OAuth2
+from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
+from fastapi import Request
+from fastapi.security.utils import get_authorization_scheme_param
 from api.models import TokenData
 
 REDISHOST = os.getenv(key="REDISHOST")
@@ -60,7 +65,9 @@ class Authentication:
             return False
         return user
 
-    def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None):
+    def create_access_token(
+        self, data: dict, expires_delta: Optional[timedelta] = None
+    ):
         """create an access token with an expiry date"""
         to_encode = data.copy()
         if expires_delta:
@@ -96,7 +103,9 @@ class Authentication:
             user_id: str = payload.get("sub")
             token_scopes = payload.get("scopes", [])
             expires = payload.get("exp")
-            token_data = TokenData(scopes=token_scopes, username=user_id, expires=expires)
+            token_data = TokenData(
+                scopes=token_scopes, username=user_id, expires=expires
+            )
         except ExpiredSignatureError:
             raise credentials_exception
         result = redis_client.setex(
@@ -126,3 +135,42 @@ class Authentication:
         else:
             redis_client.close()
             return False
+
+    class OAuth2PasswordBearerWithCookie(OAuth2):
+        """Version of fastapi's OAuth2PasswordBearer - customised to read JWT from an httpOnly cookie
+
+        Args:
+            OAuth2 ([dict]): dict containing details of the oauth schema
+        """
+
+        def __init__(
+            self,
+            tokenUrl: str,
+            scheme_name: Optional[str] = None,
+            scopes: Optional[Dict[str, str]] = None,
+            auto_error: bool = True,
+        ):
+            if not scopes:
+                scopes = {}
+            flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
+            super().__init__(
+                flows=flows, scheme_name=scheme_name, auto_error=auto_error
+            )
+
+        async def __call__(self, request: Request) -> Optional[str]:
+            authorization: str = request.cookies.get(
+                "access_token"
+            )  # changed to accept access token from httpOnly Cookie
+            print("access_token is", authorization)
+
+            scheme, param = get_authorization_scheme_param(authorization)
+            if not authorization or scheme.lower() != "bearer":
+                if self.auto_error:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Not authenticated",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                else:
+                    return None
+            return param
