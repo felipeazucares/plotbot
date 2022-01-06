@@ -1,11 +1,7 @@
 import React from "react"
+import ButtonGetStoryTree from "./ButtonGetStoryTree";
 import {
-    Button, 
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderMark,
+    Button
 } from "@chakra-ui/react"
 
 export default function ControlsContainer() {
@@ -14,7 +10,7 @@ return (
       <Button className="flex_button" colorScheme="blue">login</Button>  
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <Button className="flex_button"colorScheme="blue">get texts</Button>  
-      <Button className="flex_button" colorScheme="blue">get story</Button> 
+      <ButtonGetStoryTree colorScheme="blue"></ButtonGetStoryTree> 
 
      </div>
 
