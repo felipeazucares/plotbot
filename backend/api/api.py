@@ -25,8 +25,6 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
-from fastapi.responses import JSONResponse
-
 
 from pydantic.error_wrappers import ValidationError
 from aitextgen import aitextgen
