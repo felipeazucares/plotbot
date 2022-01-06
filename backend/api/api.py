@@ -25,6 +25,11 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
+from fastapi.responses import JSONResponse
+
+# from fastapi_jwt_auth import AuthJWT
+# from fastapi_jwt_auth.exceptions import AuthJWTException
+
 from pydantic.error_wrappers import ValidationError
 from aitextgen import aitextgen
 from jose import JWTError, jwt
@@ -305,9 +310,7 @@ async def get_a_story_object(
         APIResponse: object containing Story object wrapped in APIResponse class
     """
     if DEBUG:
-        console_display.show_debug_message(
-            message_to_show="get_a_story_object() called"
-        )
+        console_display.show_debug_message(message_to_show="get_a_story_object() called")
 
     try:
         if DEBUG:
@@ -441,9 +444,7 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(
-                message_to_show="generating text snippet"
-            )
+            console_display.show_debug_message(message_to_show="generating text snippet")
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,
