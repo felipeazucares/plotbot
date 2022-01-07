@@ -27,28 +27,13 @@ import {
         // now cook up the form
         let formData = new FormData()
         formData.append("grant_type","password")
-        formData.append("scopes","story:reader story:writer")
+        formData.append("scope","story:reader story:writer")
         formData.append("username",username)
         formData.append("password",password)
-        // console.log("data:"+formData);
-        // axios.defaults.withCredentials = true
-        // const config = {
-        //         headers: {
-        //             'content-type': 'multipart/form-data'
-        //         }
-        //     }
-        // const axiosConfig={
-        //     method: "post",
-        //     url: baseURL,
-        //     withCredentials: true,
-        //     data: data
-        // }
-
         try{            
             const response = await fetch("http://localhost:9000/login",{method:"POST", body: formData, credentials:"include"})
             if (response.status===200 && response.statusText==="OK"){
                 console.log("logged in successfully")
-                console.log(response["headers"]);
                 setIsLoggedIn(true)
             } else {
                 console.error(`Login failed with status:${response.status} - ${response.statusText}`)
