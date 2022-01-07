@@ -12,9 +12,14 @@ import { Divider } from "@chakra-ui/react";
 
 export const PlotbotContext = React.createContext();
 
+const user = {
+  name: "philip suggars",
+  email: "psuggars@NodeStack.com",
+};
+
 function App() {
   return (
-    <PlotbotContext.Provider>
+    <PlotbotContext.Provider value={user}>
       <div className="App">
         <div className="App-header">
           <Header />
