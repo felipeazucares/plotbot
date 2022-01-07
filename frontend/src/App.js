@@ -13,7 +13,7 @@ import { Divider } from "@chakra-ui/react";
 export const PlotbotContext = React.createContext();
 
 const user = {
-  name: "philip suggars",
+  name: "Philip Suggars",
   email: "psuggars@NodeStack.com",
 };
 
