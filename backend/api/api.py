@@ -18,7 +18,15 @@ from pytz import timezone
 
 # import fastapi
 from treelib import Tree
-from fastapi import FastAPI, HTTPException, Body, Depends, Security, status, Response
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    Body,
+    Depends,
+    Security,
+    status,
+    Response,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import (
     OAuth2PasswordBearer,
@@ -42,7 +50,7 @@ from api.models import (
 from api.authentication import Authentication
 import api.database as database
 import api.config
-
+from fastapi.responses import JSONResponse
 
 # set env vars & application constants
 app = FastAPI()
@@ -56,15 +64,42 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 timezone(tzname[0]).localize(datetime.now())
 # setup helper for formatting debug messages
 console_display = ConsoleDisplay()
-origins = ["http://localhost:9000", "localhost:9000", "http://localhost:3000"]
+# origins = [
+#     "http://localhost:9000",
+#     "localhost:9000",
+#     "http://localhost:3000/story",
+#     "http://localhost:3000",
+#     "localhost:3000",
+# ]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=[
+        "http://localhost:9000",
+        "http://localhost",
+        "http://localhost:9000/",
+        "http://127.0.0.1:9000",
+        "http://localhost:3000",
+        "localhost:3000",
+        "http://localhost:3000/",
+        "127.0.0.1:300",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3000/",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
+    expose_headers=["set.cookie"],
 )
+
 oauth = Authentication()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -83,7 +118,7 @@ oauth2_scheme = oauth.OAuth2PasswordBearerWithCookie(
 
 @app.post("/login", response_model=Token)
 async def login_for_access_token(
-    response: Response,
+    # response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> dict:
     """handle oauth login procedure
@@ -110,10 +145,14 @@ async def login_for_access_token(
         data={"sub": user.user_id, "scopes": form_data.scopes},
         expires_delta=access_token_expires,
     )
+    print()
+    print(f"scopes:{form_data.scopes}")
+    content = {"access_token": access_token, "token_type": "bearer"}
+    response = JSONResponse({"message": "Success"})
     response.set_cookie(
-        key="access_token", value=f"Bearer {access_token}", httponly=True
+        key="access_token", value=f"bearer {access_token}", httponly=True
     )  # set HttpOnly cookie in response
-    return {"access_token": access_token, "token_type": "bearer"}
+    return response
 
 
 async def get_current_user_token(
@@ -311,9 +350,7 @@ async def get_a_story_object(
         APIResponse: object containing Story object wrapped in APIResponse class
     """
     if DEBUG:
-        console_display.show_debug_message(
-            message_to_show="get_a_story_object() called"
-        )
+        console_display.show_debug_message(message_to_show="get_a_story_object() called")
 
     try:
         if DEBUG:
@@ -447,9 +484,7 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(
-                message_to_show="generating text snippet"
-            )
+            console_display.show_debug_message(message_to_show="generating text snippet")
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,

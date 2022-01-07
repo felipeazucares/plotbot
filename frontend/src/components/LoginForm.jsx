@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import axios from "axios"
 import {
     Input,
     Button,
@@ -24,15 +25,29 @@ import {
         // don"t reload the page
         event.preventDefault()
         // now cook up the form
-        let data = new FormData()
-        data.append("grant_type","password")
-        data.append("scopes","story:reader story:writer")
-        data.append("username",username)
-        data.append("password",password)
+        let formData = new FormData()
+        formData.append("grant_type","password")
+        formData.append("scopes","story:reader story:writer")
+        formData.append("username",username)
+        formData.append("password",password)
+        console.log("data:"+formData);
+        axios.defaults.withCredentials = true
+        // const config = {
+        //         headers: {
+        //             'content-type': 'multipart/form-data'
+        //         }
+        //     }
+        // const axiosConfig={
+        //     method: "post",
+        //     url: baseURL,
+        //     withCredentials: true,
+        //     data: data
+        // }
         try{            
-            const response = await fetch("http://localhost:9000/login",{method:"POST", body: data})
+            const response = await axios.post("http://localhost:9000/login",formData)
             if (response.status===200 && response.statusText==="OK"){
                 console.log("logged in successfully")
+                console.log(response["headers"]);
                 setIsLoggedIn(true)
             } else {
                 console.error(`Login failed with status:${response.status} - ${response.statusText}`)
