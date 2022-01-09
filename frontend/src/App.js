@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // import logo from "./logo.svg";
 import "./App.css";
 import LoginForm from "./components/LoginForm";
@@ -6,20 +6,26 @@ import TreeContainer from "./components/TreeContainer";
 import ControlsContainer from "./components/ControlsContainer";
 import SliderContainer from "./components/SliderContainer";
 import TextContainer from "./components/TextContainer";
-import OrgChart from "./components/OrgChart";
+// import OrgChart from "./components/OrgChart";
 import Header from "./components/Header";
 import { Divider } from "@chakra-ui/react";
 
-export const PlotbotContext = React.createContext();
+// const user = {
+//   name: "Philip Suggars",
+//   email: "psuggars@NodeStack.com",
+// };
 
-const user = {
-  name: "Philip Suggars",
-  email: "psuggars@NodeStack.com",
-};
+export const PlotbotContext = React.createContext({
+  user: "",
+  setUser: () => {},
+});
 
 function App() {
+  const [user, setUser] = useState("not logged in");
+  const value = { user, setUser };
+  console.log(`app user:${user}`);
   return (
-    <PlotbotContext.Provider value={user}>
+    <PlotbotContext.Provider value={value}>
       <div className="App">
         <div className="App-header">
           <Header />

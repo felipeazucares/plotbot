@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
+import { PlotbotContext } from '../App';
 import {
     Input,
     Button,
@@ -8,13 +9,14 @@ import {
     FormHelperText
 } from "@chakra-ui/react"
 
- 
   export default function Login() {
     const [password, setPassword] = useState("")
     const [username, setUsername] = useState("")
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const noUsernameError = username === ""
     const noPasswordError = password === ""
+    //get user from context
+    const {user,setUser} = useContext(PlotbotContext)
     
     const handleUsernameChange = (inputValue) => setUsername(inputValue.target.value)
     const handlePasswordChange = (inputValue) => setPassword(inputValue.target.value)
@@ -34,6 +36,8 @@ import {
             if (response.status===200 && response.statusText==="OK"){
                 console.log("logged in successfully")
                 setIsLoggedIn(true)
+                setUser(username)
+                
             } else {
                 console.error(`Login failed with status:${response.status} - ${response.statusText}`)
             }
@@ -43,38 +47,41 @@ import {
         }
     }
 
+
     const renderLoginForm =(
         <form onSubmit={tryLogin} className="form">
-            <FormControl isInvalid={noUsernameError||noPasswordError}>
-            <FormLabel htmlFor="username">Username</FormLabel>
-                <Input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={handleUsernameChange}
-                />
-                {noUsernameError ? (
-                    <FormErrorMessage>Username required</FormErrorMessage>
-                ):(
-                    <FormHelperText>
-                    </FormHelperText>
-                )}
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                />
-                {noPasswordError ? (
-                    <FormErrorMessage>Password required</FormErrorMessage>
-                ):(
-                    <FormHelperText>
-                    </FormHelperText>
-                )}
-                <Button type="submit" colorScheme="blue" size="lg">login
-                </Button>
-            </FormControl>
+            <PlotbotContext.Provider value = {user}>
+                <FormControl isInvalid={noUsernameError||noPasswordError}>
+                <FormLabel htmlFor="username">Username</FormLabel>
+                    <Input
+                        id="username"
+                        type="text"
+                        value={username}
+                        onChange={handleUsernameChange}
+                    />
+                    {noUsernameError ? (
+                        <FormErrorMessage>Username required</FormErrorMessage>
+                    ):(
+                        <FormHelperText>
+                        </FormHelperText>
+                    )}
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={handlePasswordChange}
+                    />
+                    {noPasswordError ? (
+                        <FormErrorMessage>Password required</FormErrorMessage>
+                    ):(
+                        <FormHelperText>
+                        </FormHelperText>
+                    )}
+                    <Button type="submit" colorScheme="blue" size="lg">login
+                    </Button>
+                </FormControl>
+            </PlotbotContext.Provider>
         </form>
     )
 
