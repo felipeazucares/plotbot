@@ -18,17 +18,18 @@ export default function ButtonGetStoryTree() {
                 currentNode[nodeKey]["children"].forEach((child) =>
                     parseNodes(child,newTree,children)
                 )
-                console.log(`finished children of ${nodeKey} we should write the parent now`);
+                console.log(`finished children of ${nodeKey} we should write the parent now and empty the children array?`);
                 newTree = Object.assign(newTree,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
+                //children.length = 0
             } else {
                 console.log(`no children for ${nodeKey} adding to children object`);
                 //Object.assign(children,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
                 children.push({ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
-                
+
                 console.log(children);
             }
             console.log("next node");
-            //Object.assign(newTree,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
+            newTree = Object.assign(newTree,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
             console.log(newTree);
             //children = []
         })    
