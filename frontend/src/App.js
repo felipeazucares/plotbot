@@ -21,7 +21,7 @@ export const UserContext = React.createContext({
 });
 
 export const StoryTreeContext = React.createContext({
-  storyTree: [],
+  storyTree: {},
   setStoryTree: () => {},
 });
 
@@ -29,7 +29,11 @@ function App() {
   const [user, setUser] = useState("not logged in");
   const value = { user, setUser };
   console.log(`app user:${user}`);
-  const [storyTree, setStoryTree] = useState([]);
+  const [storyTree, setStoryTree] = useState({
+    name: "top node",
+    attributes: { text: "hi" },
+  });
+
   const tree = { storyTree, setStoryTree };
   return (
     <UserContext.Provider value={value}>
