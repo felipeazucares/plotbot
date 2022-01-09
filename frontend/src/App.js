@@ -15,42 +15,51 @@ import { Divider } from "@chakra-ui/react";
 //   email: "psuggars@NodeStack.com",
 // };
 
-export const PlotbotContext = React.createContext({
+export const UserContext = React.createContext({
   user: "",
   setUser: () => {},
+});
+
+export const StoryTreeContext = React.createContext({
+  storyTree: [],
+  setStoryTree: () => {},
 });
 
 function App() {
   const [user, setUser] = useState("not logged in");
   const value = { user, setUser };
   console.log(`app user:${user}`);
+  const [storyTree, setStoryTree] = useState([]);
+  const tree = { storyTree, setStoryTree };
   return (
-    <PlotbotContext.Provider value={value}>
-      <div className="App">
-        <div className="App-header">
-          <Header />
-        </div>
-        <Divider></Divider>
-        <div className="App-row-container">
-          <div className="App-content-container-75">
-            <div className="App-content-column">
-              <TreeContainer className="App-content-element"></TreeContainer>
+    <UserContext.Provider value={value}>
+      <StoryTreeContext.Provider value={tree}>
+        <div className="App">
+          <div className="App-header">
+            <Header />
+          </div>
+          <Divider></Divider>
+          <div className="App-row-container">
+            <div className="App-content-container-75">
+              <div className="App-content-column">
+                <TreeContainer className="App-content-element"></TreeContainer>
+              </div>
+            </div>
+            <div className="App-content-container-25">
+              <div className="App-content-column">
+                <TextContainer className="App-content-element"></TextContainer>
+                <LoginForm></LoginForm>
+              </div>
             </div>
           </div>
-          <div className="App-content-container-25">
-            <div className="App-content-column">
-              <TextContainer className="App-content-element"></TextContainer>
-              <LoginForm></LoginForm>
-            </div>
+          <Divider></Divider>
+          <div>
+            <ControlsContainer></ControlsContainer>
+            <SliderContainer></SliderContainer>
           </div>
         </div>
-        <Divider></Divider>
-        <div>
-          <ControlsContainer></ControlsContainer>
-          <SliderContainer></SliderContainer>
-        </div>
-      </div>
-    </PlotbotContext.Provider>
+      </StoryTreeContext.Provider>
+    </UserContext.Provider>
   );
 }
 

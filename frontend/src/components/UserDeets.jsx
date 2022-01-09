@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
-import { PlotbotContext } from '../App';
+import { UserContext } from '../App';
 
 export default function UserDeets() {
-    const {user, setUser} = useContext(PlotbotContext)
+    const {user, setUser} = useContext(UserContext)
     console.log(`user deets context user:${user}`);
 return (
     <div>

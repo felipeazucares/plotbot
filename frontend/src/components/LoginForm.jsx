@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react"
-import { PlotbotContext } from '../App';
+import { UserContext } from '../App';
 import {
     Input,
     Button,
@@ -16,7 +16,7 @@ import {
     const noUsernameError = username === ""
     const noPasswordError = password === ""
     //get user from context
-    const {user,setUser} = useContext(PlotbotContext)
+    const {user,setUser} = useContext(UserContext)
     
     const handleUsernameChange = (inputValue) => setUsername(inputValue.target.value)
     const handlePasswordChange = (inputValue) => setPassword(inputValue.target.value)
@@ -50,7 +50,7 @@ import {
 
     const renderLoginForm =(
         <form onSubmit={tryLogin} className="form">
-            <PlotbotContext.Provider value = {user}>
+            <UserContext.Provider value = {user}>
                 <FormControl isInvalid={noUsernameError||noPasswordError}>
                 <FormLabel htmlFor="username">Username</FormLabel>
                     <Input
@@ -81,7 +81,7 @@ import {
                     <Button type="submit" colorScheme="blue" size="lg">login
                     </Button>
                 </FormControl>
-            </PlotbotContext.Provider>
+            </UserContext.Provider>
         </form>
     )
 
