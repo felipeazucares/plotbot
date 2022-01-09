@@ -1,11 +1,11 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import {
     Button
 } from "@chakra-ui/react"
-
+import { StoryTreeContext } from "../App"
  
   export default function ButtonGetStoryTree() {
-    const [storyTree, setStoryTree] = useState("")
+    const {storyTree, setStoryTree} = useContext(StoryTreeContext)
     const tryGetStoryTree = async () => 
     {
         try{            
@@ -17,6 +17,7 @@ import {
                 const result = await response.json()
                 console.log(`storyTree:${JSON.stringify(result.data.story)}`)
                 setStoryTree(result.data.story)
+
             } else {
                 console.error(`get /story failed with status:${response.status} - ${response.statusText}`)
             }
@@ -27,9 +28,11 @@ import {
     }
 
     const renderButtonGetStoryTree =(
+        <StoryTreeContext.Provider value = {storyTree}>
         <Button colorScheme="blue" className="flex_button" onClick={tryGetStoryTree}>
             get tree
         </Button>
+        </StoryTreeContext.Provider>
     )
 
     return (
