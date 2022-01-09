@@ -14,8 +14,9 @@ import {
                     credentials:"include"
                  })
             if (response.status===200 && response.statusText==="OK"){
-                setStoryTree(response["data"])
-                console.log(await response["data"].json());
+                const result = await response.json()
+                console.log(`storyTree:${JSON.stringify(result.data.story)}`)
+                setStoryTree(result.data.story)
             } else {
                 console.error(`get /story failed with status:${response.status} - ${response.statusText}`)
             }
