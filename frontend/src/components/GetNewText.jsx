@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react"
-import { UserContext } from '../App';
+// import { UserContext } from '../App';
 import {
     Button,
 } from "@chakra-ui/react"
@@ -16,9 +16,10 @@ import { StoryTreeContext } from "../App"
     
     // const handleUsernameChange = (inputValue) => setUsername(inputValue.target.value)
     // const handlePasswordChange = (inputValue) => setPassword(inputValue.target.value)
-    const {storyTree, setStoryTree} = useContext(StoryTreeContext)
+    //const {storyTree, setStoryTree} = useContext(StoryTreeContext)
+    const {text,setText} = useState("")
 
-    const tryGetText = async (itemId) => 
+    const tryGetText = async () => 
     {
         // don"t reload the page
         // event.preventDefault()
@@ -32,9 +33,9 @@ import { StoryTreeContext } from "../App"
             const response = await fetch("http://localhost:9000/text",{method:"get", credentials:"include"})
             if (response.status===200 && response.statusText==="OK"){
                 console.log("get text")
-                setStoryTree(convertTree(result.data.story))
+                const result = await response.json()
+                setText(result.data)
                 // setUser(username)
-                
             } else {
                 console.error(`get text failed with status:${response.status} - ${response.statusText}`)
             }
