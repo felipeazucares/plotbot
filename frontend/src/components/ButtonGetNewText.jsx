@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react"
 import {
     Button,
 } from "@chakra-ui/react"
-import { StoryTreeContext } from "../App"
+//import { StoryTreeContext } from "../App"
 
   export default function getNewText() {
 
@@ -29,15 +29,15 @@ import { StoryTreeContext } from "../App"
     }
 
 
-    const renderButtonGetStoryTree =(
+    const ButtonGetNewText =(
         // <StoryTreeContext.Provider value = {storyTree}>
         <Button colorScheme="blue" className="flex_button" onClick={tryGetText}>
-            get tree
+            get text
         </Button>
         // </StoryTreeContext.Provider>
     )
 
     return (
-        renderButtonGetStoryTree    
+        ButtonGetNewText    
   )
 }
