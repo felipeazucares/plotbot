@@ -6,9 +6,30 @@ import { StoryTreeContext } from "../App"
  
 export default function ButtonGetStoryTree() {
 
+    const deepCopyFunction = (inObject) => {
+        //could refactor this to add a child beneatha given parent when supplied with current tree object
+        let outObject, value, key
+        console.log("deep copy called");
+        if (typeof inObject !== "object" || inObject === null) {
+            return inObject // Return the value if inObject is not an object
+        }
+
+        // Create an array or object to hold the values
+        outObject = Array.isArray(inObject) ? [] : {}
+
+        for (key in inObject) {
+            value = inObject[key]
+
+            // Recursively (deep) copy for nested objects, including arrays
+            outObject[key] = deepCopyFunction(value)
+        }
+        return outObject
+    }
+
     function parseNodes(currentNode,newTree,children){
         //get keys in this node
         //newTree = JSON.parse(newTree)
+        
         console.log(`Node keys in this object:${Object.keys(currentNode)}`);  
         console.log(`Calling routine with currentNode:${JSON.stringify(currentNode)}`);
         console.log(`Calling routine with newTree:${JSON.stringify(newTree)}`);
@@ -19,86 +40,113 @@ export default function ButtonGetStoryTree() {
             // now check for children
             if (currentNode[nodeKey]["children"]){
                 console.log(`${currentNode[nodeKey]["children"].length} children for ${nodeKey} recursive call`);
-                currentNode[nodeKey]["children"].forEach((child) =>
+                currentNode[nodeKey]["children"].forEach((child) =>{
+                    newTree = { newTree: {"name" : nodeKey, "children": children} }
                     parseNodes(child,newTree,children)
-                )
-                console.log(`Finished collecting children of ${nodeKey}: ${children}`);
+                })
+                console.log(`Finished collecting children of ${nodeKey}: ${JSON.stringify(children)}`);
                 // need a deep copy of the object involved 
                 //newTree = Object.assign(newTree, { "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
                 console.log("newTree after collecting children:"+JSON.stringify(newTree));
                 //children.length = 0
+                
             } else {
                 console.log(`${nodeKey} is a leaf node. Processing leaf and pushing ${nodeKey} & ${currentNode[nodeKey]['data']['text']} to children object`);
                 //Object.assign(children,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
                 // console.log(`pushing this to array:${ {'name': nodeKey, 'attributes': {text:currentNode[nodeKey]['data']['text']}}`);
                 children.push({ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
                 console.log(`children array contains:${JSON.stringify(children)}`);
+                return children
             }
-            newTree={"node": "name", }
-            //newTree = Object.assign(newTree,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
-            //newTree = {newTree : { "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children}}
-            console.log(`Children array for ${nodeKey} contains:${JSON.stringify(children)} emptying now`);
-            console.log(`newTree at end of this node:${JSON.stringify(newTree)}`);
-            console.log(`${nodeKey} node completed - looping round to next node`);
-            children.length=0
+            //newTree["children"] = children
         })    
 
         return newTree 
     }
 
-    function test() {
-       let  obj={};
-        for(let i=0;1<9;i++){
-            obj = { obj: i}
-        }
-        console.log(obj);
+        // function returnNode(stringPath,currentTree){
+        //     // get key for all nodes
+        //     stringPath = stringPath + " processing {'name':" + Object.keys(currentTree)[0] +"\n"
+        //     let currentKey = Object.keys(currentTree)[0]
+        //     console.log(stringPath);
+        //     if (currentTree[currentKey].children){
+        //         stringPath = stringPath + "'children': {[\n" 
+        //         currentTree[currentKey]["children"].forEach((child) =>{
+        //             stringPath = stringPath + "'child name':"+Object.keys(child)[0]+"\n"
+        //             stringPath = stringPath + "'children':" + returnNode(stringPath,child)
+        //         })
+        //     }
+        //     else {
+        //         return stringPath
+        //     }
+        //     return stringPath
+        // }
 
-    }
+        function returnNode2(newObj,currentTree){
+            // get key for all nodes
+            let currentKey = Object.keys(currentTree)[0]
+            newObj= {"name": currentKey, "children":[]}
+            console.log("current item:" + currentKey);
+            if (currentTree[currentKey].children){
+                console.log("children detected creating newObj.children=[]");
+                //newObj.children=[]
+                currentTree[currentKey]["children"].forEach((child) =>{
+                    console.log("processing child:" + Object.keys(child)[0]);
+                    newObj.children.push(returnNode2(newObj,child))
+                })
+            }
+            else {
+                console.log("no children for :" + currentKey);
+                console.log("returning object" + JSON.stringify(newObj));
+                return newObj
+            }
+            return newObj
+        }
+
 
     function convertTree(inputTree){
         let newTree ={}
         
         console.log("storyTree starts here:");
 
-        //newTree = parseNodes(inputTree,{},[])
+        newTree = returnNode2({},inputTree,{},[])
 
-        test()
+        //newTree = deepCopyFunction(dummydata)
 
         console.log(newTree);        
 
         return newTree
 
-            // return { name: "top node", attributes: {text: "hi"}, children: [{name: "bollock 1", attributes:{text:"hairy"}},{name: "bollock 2", attributes:{text:"smooth"}}]}
         }
 
         const dummydata = 
             {
-            "cfff3cc8-6c6c-11ec-b8ff-f01898e87167": {
-                "data": "Rooty",
+            "root_key": {
                 "children": [
-                {
-                    "e318bba4-6c6c-11ec-b8ff-f01898e87167": {
-                    "data": { "text": "Unused 1" }
+                    {
+                        "child_1_key": {
+                            "data": { "text": "Unused 1" }
+                        },
                     },
-                },
-                {
-                     "zzzzbba4-6c6c-11ec-b8ff-f01898e871xx": {
-                    "children": [
-                        {
-                            "item 3" :{ 
-                                "data": {"text" : "beermats"}
-                            }
+                    {
+                        "child_2_key": {
+                            "children": [
+                                {
+                                    "grandchild_1_key" :{ 
+                                        "data": {"text" : "beermats"}
+                                    }
+                                }
+                            ],
+                            "data": { "text": "Unused 2" }
+                        }                   
+                    },
+                    {
+                        "child-3_key": {
+                            "data": { "text": "unused " }
                         }
-                    ],
-                    "data": { "text": "Unused 1" }
-                    }                   
-                },
-                {
-                    "f5a3d0f6-6c6c-11ec-b8ff-f01898e87167": {
-                    "data": { "text": "unused 2" }
                     }
-                }
-                ]
+                ],
+            "data": "Rooty",
             }
 }
 
