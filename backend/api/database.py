@@ -295,6 +295,7 @@ class StoryStorage:
                 )
                 print(exception_object)
                 raise
+            # I think this is breaking stuff - should it be returning a dict here? perhaps we add a format flag?
         return self.tree.to_dict(with_data=True)
 
     async def return_latest_story_text(self, user_id: str) -> str:
@@ -495,6 +496,7 @@ class StoryStorage:
             )
         try:
             self.last_save_story = await self.return_latest_story(user_id=self.user_id)
+            self.last_save_story.show()
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured returning latest save story from the database user_id was: {self.user_id}"
@@ -502,10 +504,10 @@ class StoryStorage:
             print(exception_object)
             raise
 
-        if DEBUG:
-            self.console_display.show_debug_message(
-                message_to_show=f"story root node {self.last_save_story.root}"
-            )
+        # if DEBUG:
+        #     self.console_display.show_debug_message(
+        #         message_to_show=f"story root node {self.last_save_story.root}"
+        #     )
         if self.last_save_story.root is not None:
             if DEBUG:
                 self.console_display.show_debug_message(

@@ -390,7 +390,7 @@ async def save_text(
         current_user (UserDetails, optional): logged in user details.
         request (StoryPayload, optional): Payload model containing text to store.
         Defaults to Body(...).
-        pranet_id (str): id of parent node - if None then assumed to be root
+        parent_id (str): id of parent node - if None then assumed to be root
 
     Raises:
         HTTPException: for an errored response from the generator model
@@ -505,7 +505,7 @@ async def generate_text(
         raise
 
     return APIResponse(
-        data={"generated_text": generated_text, "username": current_user.username},
+        data={"text": generated_text},
         code=200,
         message="Success",
     )
