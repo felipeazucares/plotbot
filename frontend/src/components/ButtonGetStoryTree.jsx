@@ -86,8 +86,8 @@ export default function ButtonGetStoryTree() {
                 const result = await response.json()
                 console.log(`storyTree:${JSON.stringify(result.data.story)}`)
                 //setStoryTree(result.data.story)
-                //setStoryTree(convertTree(result.data.story))
-                setStoryTree(convertTree(dummydata))
+                setStoryTree(convertTree(result.data.story))
+                //setStoryTree(convertTree(dummydata))
 
             } else {
                 console.error(`get /story failed with status:${response.status} - ${response.statusText}`)
