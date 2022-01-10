@@ -1,11 +1,10 @@
-import React, { useContext} from "react"
+import React, {useContext} from "react"
 import {
     Button
 } from "@chakra-ui/react"
 import { StoryTreeContext } from "../App"
  
 export default function ButtonGetStoryTree() {
-
 
         function truncateReplace(str, numWords) {
         // helper function to convert text into a node name

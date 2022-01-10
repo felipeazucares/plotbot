@@ -12,6 +12,7 @@ return (
       <Button className="flex_button" colorScheme="blue">login</Button>  
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <ButtonGetStoryTree></ButtonGetStoryTree>
+      <ButtonGetNewText></ButtonGetNewText>
      </div>
 
   );
