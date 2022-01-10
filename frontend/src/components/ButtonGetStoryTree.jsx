@@ -26,61 +26,43 @@ export default function ButtonGetStoryTree() {
         return outObject
     }
 
-    function parseNodes(currentNode,newTree,children){
-        //get keys in this node
-        //newTree = JSON.parse(newTree)
+    // function parseNodes(currentNode,newTree,children){
+    //     //get keys in this node
+    //     //newTree = JSON.parse(newTree)
         
-        console.log(`Node keys in this object:${Object.keys(currentNode)}`);  
-        console.log(`Calling routine with currentNode:${JSON.stringify(currentNode)}`);
-        console.log(`Calling routine with newTree:${JSON.stringify(newTree)}`);
-        console.log(`Calling routine with children:${JSON.stringify(children)}`);       
-        // the key is what we have to access to get to the node jammy goodness
-        Object.keys(currentNode).forEach((nodeKey)=>{
-            console.log(`Node loop processing key:${nodeKey}`);  
-            // now check for children
-            if (currentNode[nodeKey]["children"]){
-                console.log(`${currentNode[nodeKey]["children"].length} children for ${nodeKey} recursive call`);
-                currentNode[nodeKey]["children"].forEach((child) =>{
-                    newTree = { newTree: {"name" : nodeKey, "children": children} }
-                    parseNodes(child,newTree,children)
-                })
-                console.log(`Finished collecting children of ${nodeKey}: ${JSON.stringify(children)}`);
-                // need a deep copy of the object involved 
-                //newTree = Object.assign(newTree, { "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
-                console.log("newTree after collecting children:"+JSON.stringify(newTree));
-                //children.length = 0
+    //     console.log(`Node keys in this object:${Object.keys(currentNode)}`);  
+    //     console.log(`Calling routine with currentNode:${JSON.stringify(currentNode)}`);
+    //     console.log(`Calling routine with newTree:${JSON.stringify(newTree)}`);
+    //     console.log(`Calling routine with children:${JSON.stringify(children)}`);       
+    //     // the key is what we have to access to get to the node jammy goodness
+    //     Object.keys(currentNode).forEach((nodeKey)=>{
+    //         console.log(`Node loop processing key:${nodeKey}`);  
+    //         // now check for children
+    //         if (currentNode[nodeKey]["children"]){
+    //             console.log(`${currentNode[nodeKey]["children"].length} children for ${nodeKey} recursive call`);
+    //             currentNode[nodeKey]["children"].forEach((child) =>{
+    //                 newTree = { newTree: {"name" : nodeKey, "children": children} }
+    //                 parseNodes(child,newTree,children)
+    //             })
+    //             console.log(`Finished collecting children of ${nodeKey}: ${JSON.stringify(children)}`);
+    //             // need a deep copy of the object involved 
+    //             //newTree = Object.assign(newTree, { "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}, "children": children})
+    //             console.log("newTree after collecting children:"+JSON.stringify(newTree));
+    //             //children.length = 0
                 
-            } else {
-                console.log(`${nodeKey} is a leaf node. Processing leaf and pushing ${nodeKey} & ${currentNode[nodeKey]['data']['text']} to children object`);
-                //Object.assign(children,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
-                // console.log(`pushing this to array:${ {'name': nodeKey, 'attributes': {text:currentNode[nodeKey]['data']['text']}}`);
-                children.push({ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
-                console.log(`children array contains:${JSON.stringify(children)}`);
-                return children
-            }
-            //newTree["children"] = children
-        })    
+    //         } else {
+    //             console.log(`${nodeKey} is a leaf node. Processing leaf and pushing ${nodeKey} & ${currentNode[nodeKey]['data']['text']} to children object`);
+    //             //Object.assign(children,{ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
+    //             // console.log(`pushing this to array:${ {'name': nodeKey, 'attributes': {text:currentNode[nodeKey]['data']['text']}}`);
+    //             children.push({ "name": nodeKey, "attributes": {text:currentNode[nodeKey]["data"]["text"]}})
+    //             console.log(`children array contains:${JSON.stringify(children)}`);
+    //             return children
+    //         }
+    //         //newTree["children"] = children
+    //     })    
 
-        return newTree 
-    }
-
-        // function returnNode(stringPath,currentTree){
-        //     // get key for all nodes
-        //     stringPath = stringPath + " processing {'name':" + Object.keys(currentTree)[0] +"\n"
-        //     let currentKey = Object.keys(currentTree)[0]
-        //     console.log(stringPath);
-        //     if (currentTree[currentKey].children){
-        //         stringPath = stringPath + "'children': {[\n" 
-        //         currentTree[currentKey]["children"].forEach((child) =>{
-        //             stringPath = stringPath + "'child name':"+Object.keys(child)[0]+"\n"
-        //             stringPath = stringPath + "'children':" + returnNode(stringPath,child)
-        //         })
-        //     }
-        //     else {
-        //         return stringPath
-        //     }
-        //     return stringPath
-        // }
+    //     return newTree 
+    // }
 
         function returnNode2(newObj,currentTree){
             // get key for all nodes
@@ -107,12 +89,7 @@ export default function ButtonGetStoryTree() {
     function convertTree(inputTree){
         let newTree ={}
         
-        console.log("storyTree starts here:");
-
-        newTree = returnNode2({},inputTree,{},[])
-
-        //newTree = deepCopyFunction(dummydata)
-
+        newTree = returnNode2({},inputTree)
         console.log(newTree);        
 
         return newTree
