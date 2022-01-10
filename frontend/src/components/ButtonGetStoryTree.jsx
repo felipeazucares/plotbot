@@ -13,15 +13,13 @@ export default function ButtonGetStoryTree() {
         }
 
         function returnNode2(newObj,currentTree){
-            // get key for node 
+            //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
             let currentKey = Object.keys(currentTree)[0]
-            //break name into first three words with spaces replaced by _
             const objName = truncateReplace(currentTree[currentKey].data.text,3)
             newObj= {_id: currentKey, name: objName, attributes: {text:currentTree[currentKey].data.text},children:[]}
             console.log("current item:" + currentKey);
             if (currentTree[currentKey].children){
                 console.log("children detected creating newObj.children=[]");
-                //newObj.children=[]
                 currentTree[currentKey]["children"].forEach((child) =>{
                     console.log("processing child:" + Object.keys(child)[0]);
                     newObj.children.push(returnNode2(newObj,child))
@@ -37,9 +35,8 @@ export default function ButtonGetStoryTree() {
 
 
     function convertTree(inputTree){
-        let newTree ={}
-        
-        newTree = returnNode2({},inputTree)
+
+        const newTree = returnNode2({}, inputTree)
         console.log(newTree);        
 
         return newTree
