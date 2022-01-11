@@ -44,9 +44,7 @@ class UserStorage:
                 message_to_show=f"get_user_details_by_username({self.username}) called"
             )
         try:
-            user_deets = await self.user_collection.find_one(
-                {"username": self.username}
-            )
+            user_deets = await self.user_collection.find_one({"username": self.username})
             if user_deets is not None:
                 self.user_details = UserDetails(**user_deets)
             else:
@@ -125,6 +123,8 @@ class StoryStorage:
         self.current_node_id = None
         self.current_node = None
         self.parent_id = None
+        self.to_dict = False
+        self.return_object = None
 
     async def save_story(self, story: Story) -> str:
         """save the story provided to mongo db
@@ -243,24 +243,25 @@ class StoryStorage:
                 )
         return self.last_save
 
-    async def return_latest_story(self, user_id: str) -> Tree:
+    async def return_latest_story(self, user_id: str, to_dict: bool()) -> Tree:
         """return the tree found in the latest save document
 
         Args:
             user_id (str): hashed salted user_id
+            to_dict (bool): if True the routine returns a dictionary object if false a Tree is returned
 
         Returns:
-            Tree: Story tree object found in latest save
+            Tree: Story tree object found in latest save or
+            Dict: Story tree object rendered as a recursive dictionary object
         """
         self.user_id = user_id
+        self.to_dict = to_dict
         if DEBUG:
             self.console_display.show_debug_message(
-                message_to_show=f"return_latest_story({self.user_id}) called"
+                message_to_show=f"return_latest_story({self.user_id}, {self.to_dict}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(
-                user_id=self.user_id
-            )
+            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -295,8 +296,19 @@ class StoryStorage:
                 )
                 print(exception_object)
                 raise
-            # I think this is breaking stuff - should it be returning a dict here? perhaps we add a format flag?
-        return self.tree.to_dict(with_data=True)
+        if self.to_dict:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="Converting to dict object"
+                )
+            self.return_object = self.tree.to_dict(with_data=True)
+        else:
+            if DEBUG:
+                self.console_display.show_debug_message(
+                    message_to_show="Returning as Tree object"
+                )
+            self.return_object = self.tree
+        return self.return_object
 
     async def return_latest_story_text(self, user_id: str) -> str:
         """return the story text by traversing the latest tree
@@ -313,9 +325,7 @@ class StoryStorage:
                 message_to_show=f"return_latest_story_text({self.user_id}) called"
             )
         try:
-            self.last_save = await self.return_latest_save_document(
-                user_id=self.user_id
-            )
+            self.last_save = await self.return_latest_save_document(user_id=self.user_id)
         except Exception as exception_object:
             self.console_display.show_exception_message(
                 message_to_show=f"Exception occured retrieving latest save from the database user_id was: {self.user_id}"
@@ -495,7 +505,9 @@ class StoryStorage:
                 message_to_show=f"add_text_to_story_tree({self.text},{self.user_id}) called"
             )
         try:
-            self.last_save_story = await self.return_latest_story(user_id=self.user_id)
+            self.last_save_story = await self.return_latest_story(
+                user_id=self.user_id, to_dict=False
+            )
             self.last_save_story.show()
         except Exception as exception_object:
             self.console_display.show_exception_message(
@@ -504,10 +516,10 @@ class StoryStorage:
             print(exception_object)
             raise
 
-        # if DEBUG:
-        #     self.console_display.show_debug_message(
-        #         message_to_show=f"story root node {self.last_save_story.root}"
-        #     )
+        if DEBUG:
+            self.console_display.show_debug_message(
+                message_to_show=f"story root node {self.last_save_story.root}"
+            )
         if self.last_save_story.root is not None:
             if DEBUG:
                 self.console_display.show_debug_message(
@@ -746,9 +758,7 @@ class StoryStorage:
         if self.children is not None:
 
             if DEBUG:
-                self.console_display.show_debug_message(
-                    message_to_show="recursive call"
-                )
+                self.console_display.show_debug_message(message_to_show="recursive call")
             for self.child_id in self.children:
                 self.add_a_node(
                     tree_id=self.tree_id,

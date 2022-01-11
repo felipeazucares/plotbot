@@ -319,7 +319,7 @@ async def get_latest_story_object(
             )
         db_storage = database.StoryStorage()
         retrieve_reponse = await db_storage.return_latest_story(
-            user_id=current_user.user_id
+            user_id=current_user.user_id, to_dict=True
         )
         # retrieve_reponse.show()
     except Exception as exception_object:
@@ -350,9 +350,7 @@ async def get_a_story_object(
         APIResponse: object containing Story object wrapped in APIResponse class
     """
     if DEBUG:
-        console_display.show_debug_message(
-            message_to_show="get_a_story_object() called"
-        )
+        console_display.show_debug_message(message_to_show="get_a_story_object() called")
 
     try:
         if DEBUG:
@@ -486,9 +484,7 @@ async def generate_text(
         )
     try:
         if DEBUG:
-            console_display.show_debug_message(
-                message_to_show="generating text snippet"
-            )
+            console_display.show_debug_message(message_to_show="generating text snippet")
         ai_instance = aitextgen()
         generated_text = ai_instance.generate_one(
             prompt=request.prompt,
