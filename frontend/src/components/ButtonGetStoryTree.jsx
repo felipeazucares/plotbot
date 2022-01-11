@@ -42,36 +42,36 @@ export default function ButtonGetStoryTree() {
 
         }
 
-        const dummydata = 
-            {
-            "root_key": {
-                "children": [
-                    {
-                        "child_1_key": {
-                            "data": { "text": "first unused piece of text" }
-                        },
-                    },
-                    {
-                        "child_2_key": {
-                            "children": [
-                                {
-                                    "grandchild_1_key" :{ 
-                                        "data": {"text" : "I liked the beermats in the old pub much the best."}
-                                    }
-                                }
-                            ],
-                            "data": { "text": "Second unused piece of text" }
-                        }                   
-                    },
-                    {
-                        "child-3_key": {
-                            "data": { "text": "third unused piece of text" }
-                        }
-                    }
-                ],
-            "data": {"text": "Rooty"},
-            }
-}
+//         const dummydata = 
+//             {
+//             "root_key": {
+//                 "children": [
+//                     {
+//                         "child_1_key": {
+//                             "data": { "text": "first unused piece of text" }
+//                         },
+//                     },
+//                     {
+//                         "child_2_key": {
+//                             "children": [
+//                                 {
+//                                     "grandchild_1_key" :{ 
+//                                         "data": {"text" : "I liked the beermats in the old pub much the best."}
+//                                     }
+//                                 }
+//                             ],
+//                             "data": { "text": "Second unused piece of text" }
+//                         }                   
+//                     },
+//                     {
+//                         "child-3_key": {
+//                             "data": { "text": "third unused piece of text" }
+//                         }
+//                     }
+//                 ],
+//             "data": {"text": "Rooty"},
+//             }
+// }
 
 
     const {storyTree, setStoryTree} = useContext(StoryTreeContext)
