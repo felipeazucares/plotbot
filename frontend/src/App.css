@@ -94,3 +94,17 @@
     transform: rotate(360deg);
   }
 }
+
+.node__root > circle {
+  fill: cornflowerblue;
+}
+
+.node__branch > circle {
+  fill: rgb(54, 67, 171);
+}
+
+.node__leaf > circle {
+  fill: rgba(11, 0, 128, 0.852);
+  /* Let's also make the radius of leaf nodes larger */
+  r: 50;
+}
