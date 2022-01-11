@@ -1,10 +1,10 @@
 import React from "react"
 import ButtonGetStoryTree from "./ButtonGetStoryTree";
-
+import ButtonGetNewText from "./ButtonGetNewText"
 import {
     Button
 } from "@chakra-ui/react"
-import GetNewTextButton from "./GetNewTextButton";
+// import GetNewTextButton from "./ButtonGetNewText";
 
 export default function ControlsContainer() {
 return (
@@ -12,7 +12,7 @@ return (
       <Button className="flex_button" colorScheme="blue">login</Button>  
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <ButtonGetStoryTree></ButtonGetStoryTree>
-      <GetNewTextButton></GetNewTextButton>
+      <ButtonGetNewText></ButtonGetNewText>
      </div>
 
   );

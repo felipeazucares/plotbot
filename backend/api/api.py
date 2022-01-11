@@ -493,6 +493,11 @@ async def generate_text(
             repetition_penalty=1,
             num_beams=1,
         )
+        # get last index of "." - no simple way to do this - reverse the string and find the first instance of "."
+        rev_text = generated_text[::-1]
+        last_index = len(generated_text) - rev_text.index(".")
+        # now we no the position of the last ".", truncate it
+        truncated_text = generated_text[0:last_index]
     except Exception as exception_object:
         console_display.show_exception_message(
             message_to_show="Error occured generating text."
@@ -501,7 +506,7 @@ async def generate_text(
         raise
 
     return APIResponse(
-        data={"text": generated_text},
+        data={"text": truncated_text},
         code=200,
         message="Success",
     )
