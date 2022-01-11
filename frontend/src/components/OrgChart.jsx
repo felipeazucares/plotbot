@@ -1,5 +1,7 @@
 import React, { useContext} from "react"
-import Tree from "react-d3-tree";
+import Tree from "react-d3-tree"
+import './custom-tree.css'
+
 
 import { StoryTreeContext } from "../App"
 // This is a simplified example of an org chart with a depth of 2.
@@ -62,9 +64,10 @@ export default function OrgChartTree() {
     <div id="treeWrapper"style={{height: "60vh"}}>
       <Tree data={storyTree} 
       orientation="vertical" 
-        rootNodeClassName="node__root"
-        branchNodeClassName="node__branch"
-        leafNodeClassName="node__leaf"/>
+        rootNodeClassName="node_root"
+        branchNodeClassName="node_branch"
+        leafNodeClassName="node_leaf"
+        />
     </div>
     </StoryTreeContext.Provider>
   );
