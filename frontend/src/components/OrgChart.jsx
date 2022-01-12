@@ -129,9 +129,9 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
-      <Tooltip label={nodeDatum.attributes?.text}>
+      <Tooltip placement='bottom' hasArrow bg='red.500'label={nodeDatum.attributes?.text}>
         <g>
-        <circle r="10" style={{}} onClick={() => handleNodeClick(nodeDatum)} onMouseEnter={()=>handleHover()}/>
+        <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)} onMouseEnter={()=>handleHover()}/>
         <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
           {nodeDatum.name}
 
