@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect} from "react"
 import Tree from "react-d3-tree"
 import './custom-tree.css'
 import { useCenteredTree } from "./Helpers";
-import { StoryTreeContext,StoryTextContext,TemperatureContext } from "../App"
+import { StoryTreeContext,TemperatureContext } from "../App"
 import { Spinner } from '@chakra-ui/react'
 import { Tooltip} from '@chakra-ui/react'
 
@@ -167,11 +167,11 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
-    <Tooltip placement='bottom' closeDelay={200} arrowSize={20}hasArrow bg='orange.400'label={nodeDatum._id + nodeDatum.attributes.text }>
+    <Tooltip placement='bottom' closeDelay={200} arrowSize={20}hasArrow bg='orange.400'label={nodeDatum.attributes.text }>
 
       <g>
-        <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)}/>
-        <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
+        <circle r="10" bg={true} style={{}} onClick={() => handleNodeClick(nodeDatum)}/>
+        <text fill="blue.500" strokeWidth="0" x="15" onClick={toggleNode}>
           {nodeDatum.name}
         </text>
         {/* {nodeDatum.attributes?.text && (
