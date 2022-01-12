@@ -83,14 +83,42 @@ export default function OrgChartTree() {
 
     
     const tryGetText = async (parent_id,promptText) => {
-   
+
+      // return the end of the first sentence in the provided text
+      function getlastSentence(promptText) {
+        const sentenceTerminators = [".","!","?",".'","!'","?'",'."','?"','!"']
+        let currentEndIndex =-1
+        let foundIndex=-1
+        let result=""
+        for (let terminator of sentenceTerminators){
+          console.log(`currentEndIndex: ${currentEndIndex}`);
+          console.log(`foundIndex: ${foundIndex}`);
+          // need to knock the last char off because that's always a full stop
+          foundIndex = promptText.substring(0,promptText.length-1).lastIndexOf(terminator)
+          if(foundIndex!==-1){
+            console.log(`${terminator} found at ${foundIndex}`);
+            if (foundIndex>currentEndIndex){
+              currentEndIndex = foundIndex
+            }
+          }
+        }
+        if (currentEndIndex >-1){
+          result= promptText.substring(currentEndIndex+2,promptText.length)
+        }
+        else{
+          console.error("Unable to detect final sentence in promptText");
+          result= ""
+        }
+        return result
+      }
+
+  
       //get the last complete sentence from the prompt
-      const endOfPenultimateSentence = promptText.substring(1,promptText.length-1).lastIndexOf(".")
-      console.log(`promptText: ${promptText}`)
-      console.log(`end of text: ${endOfPenultimateSentence}`)
-      promptText=promptText.substring(endOfPenultimateSentence+2,promptText.length)
-      console.log(`last sentence promptText: ${promptText}`)
-      const payload={
+      console.log(`complete promptText: ${promptText}`)
+      promptText = getlastSentence(promptText)
+      console.log(`last sentence: ${promptText}`)
+
+     const payload={
         "prompt": promptText,
         "temperature": 0.71234132
       }
@@ -116,13 +144,10 @@ export default function OrgChartTree() {
         console.error(`Exception occured generating text: ${error}`)
       }
       // no that we have the text add it onto the the last item in the tree
-      
-      // remove first sentance as this was the prompt.
-      // remove any double quotes from
-      console.log(`generated text to trunc:${JSON.stringify(result.data)}`)
-      const endOfFirstSentence = result.data.text.indexOf(". ")
-      const textToStore = result.data.text.substring(endOfFirstSentence,result.data.text.length)
-      const textPayload ={text: textToStore}
+
+      //remove the first sentence from the returned text as it's the prompt and will cause duplicates in the story
+      const textPayload ={text: result.data.text.substring(promptText.length,result.data.text.length)}
+      console.log(`text to store:${textPayload.text}`);
 
       try{            
         const response = await fetch(`http://localhost:9000/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
@@ -143,7 +168,7 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
-      <Tooltip placement='bottom' hasArrow bg='red.500'label={nodeDatum._id + nodeDatum.attributes.text }>
+      <Tooltip placement='bottom' closeDelay={500} arrowSize={20}hasArrow bg='red.400'label={nodeDatum._id + nodeDatum.attributes.text }>
         <g>
         <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)} onMouseEnter={()=>handleHover()}/>
         <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
@@ -193,7 +218,7 @@ export default function OrgChartTree() {
       leafNodeClassName="node_leaf"
       enableLegacyTransitions="true"
       transitionDuration="2000"
-      collapsible="true"
+      collapsible="false"
       // onNodeMouseOver={window.alert("eh")}
       translate={translate}
       renderCustomNodeElement={(rd3tProps) =>

@@ -491,8 +491,9 @@ async def generate_text(
             prompt=request.prompt,
             max_length=100,
             temperature=float(request.temperature),
-            # temperature=float(),
             seed=random.randrange(1, 999),
+            repetition_penalty=1,
+            num_beams=1,
         )
         # get last index of "." - no simple way to do this - reverse the string and find the first instance of "."
         rev_text = generated_text[::-1]
