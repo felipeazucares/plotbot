@@ -103,12 +103,15 @@
 
   position: fixed;
   z-index: 10;
-  left: 40%;
+  left: 36%;
   top: 40%;
-  /* right: 0;
-  top: 0;
-  bottom: 0;  */
-  /* width: 50px;
-  height: 50px; */
   margin: auto;
+}
+
+.background-white {
+  background-color: rgba(255, 255, 255);
+}
+
+.background-grey {
+  background-color: rgb(45, 46, 47);
 }

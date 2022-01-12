@@ -4,6 +4,7 @@ import './custom-tree.css'
 import { useCenteredTree } from "./Helpers";
 import { StoryTreeContext } from "../App"
 import { Spinner } from '@chakra-ui/react'
+import { Tooltip } from '@chakra-ui/react'
 
 
 export default function OrgChartTree() {
@@ -11,13 +12,14 @@ export default function OrgChartTree() {
   const [translate, containerRef] = useCenteredTree()
   const [text,setText] = useState("")
   const [isLoading, setLoading] = useState(false);
+  const [isBackgroundDim,setIsBackgroundDim] = useState(false)
+  const [status,setStatus] = useState("")
+  
+
+
   const showSpinner = () => {
     setLoading(currentIsLoaded => !currentIsLoaded)
   };
-        // function truncateReplace(str, numWords) {
-        // // helper function to convert text into a node name
-        //     return str.split(" ").splice(0,numWords).join(" ")
-        // }
 
         function returnNode2(newObj,currentTree, count){
           count = count + 1
@@ -46,7 +48,6 @@ export default function OrgChartTree() {
 
         const newTree = returnNode2({}, inputTree,0)
         console.log(newTree);        
-
         return newTree
 
         }
@@ -79,7 +80,6 @@ export default function OrgChartTree() {
    
       //get the last complete sentence from the prompt
       const endOfPenultimateSentence = promptText.substring(1,promptText.length-1).lastIndexOf(".")
-      
       console.log(`promptText: ${promptText}`)
       console.log(`end of text: ${endOfPenultimateSentence}`)
       promptText=promptText.substring(endOfPenultimateSentence+2,promptText.length)
@@ -93,6 +93,7 @@ export default function OrgChartTree() {
       
       try{            
         showSpinner(true)
+
         const response = await fetch("http://localhost:9000/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200 && response.statusText==="OK"){
           console.log("get text")
@@ -128,49 +129,61 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
-      <g>
-      <circle r="10" onClick={() => handleNodeClick(nodeDatum)}/>
-      <text fill="blue" strokeWidth="0" x="15" onClick={toggleNode}>
-        {nodeDatum.name}
-      </text>
-      {/* {nodeDatum.attributes?.text && (
-        <text fill="grey" x="20" y="20" strokeWidth="0">
-          {nodeDatum.attributes?.text}
+      <Tooltip label={nodeDatum.attributes?.text}>
+        <g>
+        <circle r="10" style={{}} onClick={() => handleNodeClick(nodeDatum)} onMouseEnter={()=>handleHover()}/>
+        <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
+          {nodeDatum.name}
+
         </text>
-      )} */}
-    </g>
+        {/* {nodeDatum.attributes?.text && (
+          <text fill="grey" x="20" y="20" strokeWidth="0">
+            {nodeDatum.attributes?.text}
+          </text>
+        )} */}
+      </g>
+    </Tooltip>
   )
     const handleNodeClick = async (nodeDatum) => {
       if (nodeDatum.children.length===0){
+        setIsBackgroundDim(true)
+        setStatus("thinking")
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
         await tryGetStoryTree()
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
         await tryGetStoryTree()
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
         await tryGetStoryTree()
+        setIsBackgroundDim(false)
+        setStatus("")
       }
     }
 
+  const handleHover = () => {
+    
+  }
+
   //render component on load
   useEffect(() => {
-    document.body.style.background = "white";
+    // document.body.style.background = {background};
     tryGetStoryTree()},[]);
 
   return (
     // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
     <StoryTreeContext.Provider value={storyTree}>
-    <div id="treeWrapper"style={{height: "60vh"}} ref={containerRef}>
-      <Tree data={storyTree} 
+    <div id="treeWrapper"style={{height: "60vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
+      <Tree data={storyTree}
       orientation="vertical" 
       rootNodeClassName="node_root"
       branchNodeClassName="node_branch"
       leafNodeClassName="node_leaf"
       enableLegacyTransitions="true"
+      transitionDuration="2000"
       // onNodeMouseOver={window.alert("eh")}
       translate={translate}
       renderCustomNodeElement={(rd3tProps) =>
         renderNodeWithCustomEvents({ ...rd3tProps, handleNodeClick })
-      }      
+      }  
         />
     </div>
 
@@ -179,8 +192,7 @@ export default function OrgChartTree() {
       speed='2s'
       emptyColor='gray.200'
       color='blue.500'
-      size='xl'
-    />}
+      size='xl'></Spinner>}
     </StoryTreeContext.Provider>
   )
 }
