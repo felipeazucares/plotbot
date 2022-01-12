@@ -1,6 +1,6 @@
 import React from "react"
 import ButtonGetStoryTree from "./ButtonGetStoryTree";
-import ButtonGetNewText from "./ButtonGetNewText"
+import ButtonRestart from "./ButtonRestart"
 import {
     Button
 } from "@chakra-ui/react"
@@ -12,7 +12,7 @@ return (
       <Button className="flex_button" colorScheme="blue">login</Button>  
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <ButtonGetStoryTree></ButtonGetStoryTree>
-      <ButtonGetNewText></ButtonGetNewText>
+      <ButtonRestart></ButtonRestart>
      </div>
 
   );
