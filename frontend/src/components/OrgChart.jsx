@@ -26,7 +26,13 @@ export default function OrgChartTree() {
             //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
             let currentKey = Object.keys(currentTree)[0]
             //const objName = truncateReplace(currentTree[currentKey].data.text,3)
-            newObj= {_id: currentKey, name: count, attributes: {text:currentTree[currentKey].data.text},children:[]}
+            if(currentTree[currentKey].children){
+              newObj= {_id: currentKey, name: count, attributes: {text:currentTree[currentKey].data.text},children:[]}
+            }
+            else {
+              
+              newObj= {_id: currentKey, name: count, attributes: {text:currentTree[currentKey].data.text}}
+            }
             console.log("current item:" + currentKey);
             if (currentTree[currentKey].children){
                 console.log("children detected creating newObj.children=[]");
@@ -90,28 +96,36 @@ export default function OrgChartTree() {
       }
 
       //get last sentence from text provided
-      
+      let result={}
       try{            
         showSpinner(true)
-
+        console.log("Generating text ...")
+        console.log("------------------------------------------------");
         const response = await fetch("http://localhost:9000/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200 && response.statusText==="OK"){
-          console.log("get text")
-          const result = await response.json()
-          console.log(`result:${JSON.stringify(result)}`)
-          setText(await result.data)
+          result = await response.json()
+          console.log(`generated text:${JSON.stringify(result)}`)
+          setText(result.data)
           // setUser(username)
         } else {
           console.error(`generating text failed with status:${response.status} - ${response.statusText}`)
         }
+        console.log("------------------------------------------------");
       }
       catch(error){
         console.error(`Exception occured generating text: ${error}`)
       }
-      console.log(`text:${JSON.stringify(text)}`);
       // no that we have the text add it onto the the last item in the tree
+      
+      // remove first sentance as this was the prompt.
+      // remove any double quotes from
+      console.log(`generated text to trunc:${JSON.stringify(result.data)}`)
+      const endOfFirstSentence = result.data.text.indexOf(". ")
+      const textToStore = result.data.text.substring(endOfFirstSentence,result.data.text.length)
+      const textPayload ={text: textToStore}
+
       try{            
-        const response = await fetch(`http://localhost:9000/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(text), credentials:"include", headers: {"Content-Type": "application/json"}})
+        const response = await fetch(`http://localhost:9000/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200 && response.statusText==="OK"){
           console.log("save text to db")
           const result = await response.json()
@@ -129,7 +143,7 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
-      <Tooltip placement='bottom' hasArrow bg='red.500'label={nodeDatum.attributes?.text}>
+      <Tooltip placement='bottom' hasArrow bg='red.500'label={nodeDatum._id + nodeDatum.attributes.text }>
         <g>
         <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)} onMouseEnter={()=>handleHover()}/>
         <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
@@ -145,7 +159,7 @@ export default function OrgChartTree() {
     </Tooltip>
   )
     const handleNodeClick = async (nodeDatum) => {
-      if (nodeDatum.children.length===0){
+      if (!nodeDatum.children){
         setIsBackgroundDim(true)
         setStatus("thinking")
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
@@ -179,6 +193,7 @@ export default function OrgChartTree() {
       leafNodeClassName="node_leaf"
       enableLegacyTransitions="true"
       transitionDuration="2000"
+      collapsible="true"
       // onNodeMouseOver={window.alert("eh")}
       translate={translate}
       renderCustomNodeElement={(rd3tProps) =>

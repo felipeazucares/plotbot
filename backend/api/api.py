@@ -12,6 +12,7 @@ Returns:
     ResponseModel: wrapper class containing response data
 """
 import os
+import random
 from time import tzname
 from datetime import timedelta, datetime
 from pytz import timezone
@@ -490,14 +491,16 @@ async def generate_text(
             prompt=request.prompt,
             max_length=100,
             temperature=float(request.temperature),
-            repetition_penalty=1,
-            num_beams=1,
+            # temperature=float(),
+            seed=random.randrange(1, 999),
         )
         # get last index of "." - no simple way to do this - reverse the string and find the first instance of "."
         rev_text = generated_text[::-1]
         last_index = len(generated_text) - rev_text.index(".")
-        # now we no the position of the last ".", truncate it
+
+        # now we know the position of the last ".", truncate it
         truncated_text = generated_text[0:last_index]
+        print(f"returned: {truncated_text}")
     except Exception as exception_object:
         console_display.show_exception_message(
             message_to_show="Error occured generating text."
