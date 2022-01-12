@@ -14,8 +14,6 @@ export default function OrgChartTree() {
   const [isLoading, setLoading] = useState(false);
   const [isBackgroundDim,setIsBackgroundDim] = useState(false)
   const [status,setStatus] = useState("")
-  
-
 
   const showSpinner = () => {
     setLoading(currentIsLoaded => !currentIsLoaded)
@@ -143,7 +141,7 @@ export default function OrgChartTree() {
       catch(error){
         console.error(`Exception occured generating text: ${error}`)
       }
-      // no that we have the text add it onto the the last item in the tree
+      // now that we have the text add it onto the the last item in the tree
 
       //remove the first sentence from the returned text as it's the prompt and will cause duplicates in the story
       const textPayload ={text: result.data.text.substring(promptText.length,result.data.text.length)}
@@ -168,9 +166,10 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
-      <Tooltip placement='bottom' closeDelay={500} arrowSize={20}hasArrow bg='red.400'label={nodeDatum._id + nodeDatum.attributes.text }>
-        <g>
-        <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)} onMouseEnter={()=>handleHover()}/>
+    <Tooltip placement='bottom' closeDelay={200} arrowSize={20}hasArrow bg='orange.400'label={nodeDatum._id + nodeDatum.attributes.text }>
+
+      <g>
+        <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)}/>
         <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
           {nodeDatum.name}
 
@@ -198,9 +197,6 @@ export default function OrgChartTree() {
       }
     }
 
-  const handleHover = () => {
-    
-  }
 
   //render component on load
   useEffect(() => {
@@ -219,7 +215,6 @@ export default function OrgChartTree() {
       enableLegacyTransitions="true"
       transitionDuration="2000"
       collapsible="false"
-      // onNodeMouseOver={window.alert("eh")}
       translate={translate}
       renderCustomNodeElement={(rd3tProps) =>
         renderNodeWithCustomEvents({ ...rd3tProps, handleNodeClick })
@@ -231,7 +226,7 @@ export default function OrgChartTree() {
       thickness='20px'
       speed='2s'
       emptyColor='gray.200'
-      color='blue.500'
+      color='orange.400'
       size='xl'></Spinner>}
     </StoryTreeContext.Provider>
   )
