@@ -34,7 +34,7 @@ function App() {
   const value = { user, setUser };
   // this will contain the tree representation
   const [storyText, setStoryText] = useState("");
-  const [temperature, setTemperature] = useState(0.7001);
+  const [temperature, setTemperature] = useState(parseFloat(0.7));
   // this will set the text generated from the tree
   const [storyTree, setStoryTree] = useState({
     name: "Something broke!",

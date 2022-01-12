@@ -2,14 +2,15 @@ import React, { useContext, useState, useEffect} from "react"
 import Tree from "react-d3-tree"
 import './custom-tree.css'
 import { useCenteredTree } from "./Helpers";
-import { StoryTreeContext,StoryTextContext } from "../App"
+import { StoryTreeContext,StoryTextContext,TemperatureContext } from "../App"
 import { Spinner } from '@chakra-ui/react'
-import { Tooltip, Button } from '@chakra-ui/react'
+import { Tooltip} from '@chakra-ui/react'
 
 
 export default function OrgChartTree() {
   const {storyTree, setStoryTree} = useContext(StoryTreeContext)
-  const {storyText, setStoryText} = useContext(StoryTextContext)
+  // const {storyText, setStoryText} = useContext(StoryTextContext)
+  const {temperature, setTemperature} = useContext(TemperatureContext)
   const [translate, containerRef] = useCenteredTree()
   const [text,setText] = useState("")
   const [isLoading, setLoading] = useState(false);
@@ -119,21 +120,20 @@ export default function OrgChartTree() {
 
      const payload={
         "prompt": promptText,
-        "temperature": 0.71234132
+        "temperature": `${temperature}`
       }
 
       //get last sentence from text provided
       let result={}
       try{            
         showSpinner(true)
-        console.log("Generating text ...")
+        console.log(`Generating text ... with temperature:${temperature}`)
         console.log("------------------------------------------------");
         const response = await fetch("http://localhost:9000/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200 && response.statusText==="OK"){
           result = await response.json()
           console.log(`generated text:${JSON.stringify(result)}`)
           setText(result.data)
-          // setUser(username)
         } else {
           console.error(`generating text failed with status:${response.status} - ${response.statusText}`)
         }
