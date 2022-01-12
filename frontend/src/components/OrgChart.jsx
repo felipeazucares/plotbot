@@ -2,13 +2,14 @@ import React, { useContext, useState, useEffect} from "react"
 import Tree from "react-d3-tree"
 import './custom-tree.css'
 import { useCenteredTree } from "./Helpers";
-import { StoryTreeContext } from "../App"
+import { StoryTreeContext,StoryTextContext } from "../App"
 import { Spinner } from '@chakra-ui/react'
-import { Tooltip } from '@chakra-ui/react'
+import { Tooltip, Button } from '@chakra-ui/react'
 
 
 export default function OrgChartTree() {
   const {storyTree, setStoryTree} = useContext(StoryTreeContext)
+  const {storyText, setStoryText} = useContext(StoryTextContext)
   const [translate, containerRef] = useCenteredTree()
   const [text,setText] = useState("")
   const [isLoading, setLoading] = useState(false);
@@ -172,7 +173,6 @@ export default function OrgChartTree() {
         <circle r="10" bg='blue.500' style={{}} onClick={() => handleNodeClick(nodeDatum)}/>
         <text fill="grey" strokeWidth="0" x="15" onClick={toggleNode}>
           {nodeDatum.name}
-
         </text>
         {/* {nodeDatum.attributes?.text && (
           <text fill="grey" x="20" y="20" strokeWidth="0">

@@ -1,5 +1,4 @@
 import React from "react"
-import ButtonGetStoryTree from "./ButtonGetStoryTree";
 import ButtonRestart from "./ButtonRestart"
 import {
     Button
@@ -8,10 +7,9 @@ import {
 
 export default function ControlsContainer() {
 return (
-    <div className="App-row-container">
+    <div className="App-controls-container">
       <Button className="flex_button" colorScheme="blue">login</Button>  
       <Button className="flex_button" colorScheme="blue">logout</Button> 
-      <ButtonGetStoryTree></ButtonGetStoryTree>
       <ButtonRestart></ButtonRestart>
      </div>
 

@@ -32,8 +32,8 @@ return (
       <SliderMark value={47} mt='1' ml='-2.5' fontSize='sm'>
         Ernest Hemmingway
       </SliderMark>
-      <SliderMark value={93.8} mt='1' ml='-2.5' fontSize='sm'>
-        Nicholas Cage
+      <SliderMark value={94} mt='1' ml='-2.5' fontSize='sm'>
+        Nic Cage
       </SliderMark>
       <SliderTrack>
         <SliderFilledTrack />

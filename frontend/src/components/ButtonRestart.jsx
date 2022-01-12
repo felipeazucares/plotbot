@@ -112,9 +112,9 @@ export default function ButtonRestart() {
 
     const renderButtonRestart =(
         <StoryTreeContext.Provider value = {storyTree}>
-        <Button colorScheme="blue" className="flex_button" onClick={tryRestart}>
-            Start Here
-        </Button>
+            <Button colorScheme="blue" className="flex_button" onClick={tryRestart}>
+                Start Here
+            </Button>
         </StoryTreeContext.Provider>
     )
 
