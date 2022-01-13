@@ -25,7 +25,7 @@ from api.models import TokenData
 
 REDISHOST = os.getenv(key="REDISHOST")
 REDISPORT = os.getenv(key="REDISPORT")
-REDISPASSWORD = os.getenv(key="REDISPASSWORD")
+# REDISPASSWORD = os.getenv(key="REDISPASSWORD")
 USER_COLLECTION_NAME = os.getenv(key="USER_COLLECTION_NAME")
 timezone(tzname[0]).localize(datetime.now())
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -65,9 +65,7 @@ class Authentication:
             return False
         return user
 
-    def create_access_token(
-        self, data: dict, expires_delta: Optional[timedelta] = None
-    ):
+    def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None):
         """create an access token with an expiry date"""
         to_encode = data.copy()
         if expires_delta:
@@ -94,8 +92,9 @@ class Authentication:
             self.console_display.show_debug_message(
                 message_to_show=f"REDISPORT:{REDISPORT}"
             )
-        redis_client = redis.StrictRedis(
-            host=REDISHOST, port=REDISPORT, password=REDISPASSWORD
+        redis_client = redis.Redis(
+            host=REDISHOST,
+            port=REDISPORT,
         )
 
         try:
@@ -103,9 +102,7 @@ class Authentication:
             user_id: str = payload.get("sub")
             token_scopes = payload.get("scopes", [])
             expires = payload.get("exp")
-            token_data = TokenData(
-                scopes=token_scopes, username=user_id, expires=expires
-            )
+            token_data = TokenData(scopes=token_scopes, username=user_id, expires=expires)
         except ExpiredSignatureError:
             raise credentials_exception
         result = redis_client.setex(
@@ -126,8 +123,9 @@ class Authentication:
             self.console_display.show_debug_message(
                 message_to_show=f"REDISPORT:{REDISPORT}"
             )
-        redis_client = redis.StrictRedis(
-            host=REDISHOST, port=REDISPORT, password=REDISPASSWORD
+        redis_client = redis.Redis(
+            host=REDISHOST,
+            port=REDISPORT,
         )
         if redis_client.get(token):
             redis_client.close()
@@ -153,9 +151,7 @@ class Authentication:
             if not scopes:
                 scopes = {}
             flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
-            super().__init__(
-                flows=flows, scheme_name=scheme_name, auto_error=auto_error
-            )
+            super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
         async def __call__(self, request: Request) -> Optional[str]:
             authorization: str = request.cookies.get(
