@@ -187,11 +187,6 @@ export default function OrgChartTree() {
         <text fill="blue.500" strokeWidth="0" x="15" onClick={toggleNode}>
           {nodeDatum.name} 
         </text>
-        {/* {nodeDatum.attributes?.text && (
-          <text fill="grey" x="20" y="20" strokeWidth="0">
-            {nodeDatum.attributes?.text}
-          </text>
-        )} */}
       </g>
     </Tooltip>
   )
@@ -219,7 +214,7 @@ export default function OrgChartTree() {
   return (
     // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
     <StoryTreeContext.Provider value={storyTree}>
-    <div id="treeWrapperx"style={{height: "60vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
+    <div style={{height: "40vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
       <Tree data={storyTree}
       orientation="vertical" 
       rootNodeClassName="node_root"

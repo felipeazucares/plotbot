@@ -51,18 +51,19 @@
   display: flex;
   flex-direction: column;
   border-radius: 15px;
-  border: 1px solid rgba(215, 211, 211, 0.955);
+  border: 1px dashed rgba(215, 211, 211, 0.955);
   padding: 20px;
+  overflow: auto;
 }
 
 .App-content-element {
-  /* border: 1px dashed rgb(99, 89, 89); */
-  flex: 1;
+  /* flex: 1; */
 }
 .App-text-container {
   flex-basis: 50%;
   order: 2;
   padding: 20px;
+
   /* border: 1px dashed rgb(99, 89, 89); */
 }
 
@@ -74,7 +75,7 @@
 #loader {
   position: fixed;
   z-index: 10;
-  left: 36%;
+  left: 30%;
   top: 40%;
   margin: auto;
 }
@@ -94,7 +95,7 @@
 
 .box-scroll {
   max-height: 60vh;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 .menu {

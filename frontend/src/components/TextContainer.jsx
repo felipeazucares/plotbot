@@ -34,7 +34,7 @@ export default function TextContainer() {
     tryGetStoryText()},[setStoryText,storyTree]);    
 
 return (
-    <div>
+    <div style={{height: "40vh"}} >
         {storyText}
     </div>
   );
