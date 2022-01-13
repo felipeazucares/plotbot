@@ -1,7 +1,7 @@
 import React from "react"
 import ButtonRestart from "./ButtonRestart"
 import {
-    Button
+    Button, Container
 } from "@chakra-ui/react"
 // import GetNewTextButton from "./ButtonGetNewText";
 
@@ -12,6 +12,5 @@ return (
       <Button className="flex_button" colorScheme="blue">logout</Button> 
       <ButtonRestart></ButtonRestart>
      </div>
-
   );
 }

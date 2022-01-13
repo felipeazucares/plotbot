@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  border: 1px dashed rgb(99, 89, 89);
+  /* border: 1px dashed rgb(99, 89, 89); */
   height: 100vh;
 }
 
@@ -15,49 +15,55 @@
   display: flex;
   flex-direction: row;
   margin: 0;
-  border: 1px dashed rgb(99, 89, 89);
+  border-radius: 15px;
+  border: 1px solid rgba(215, 211, 211, 0.955);
   padding: 20px;
 }
 
 .App-controls-container {
+  /* border-radius: 15px;
+  border: 1px solid rgba(215, 211, 211, 0.955); */
   display: flex;
   flex-direction: row;
   justify-content: center;
-  border: 1px dashed rgb(99, 89, 89);
   padding: 20px;
 }
 
 .App-content-container-75 {
-  flex-basis: 75%;
+  flex-basis: 66%;
   order: 1;
   padding: 20px;
   height: 100%;
-  border: 1px dashed rgb(99, 89, 89);
+  padding: 20px;
+  /* border: 1px dashed rgb(99, 89, 89); */
 }
 
 .App-content-container-25 {
-  flex-basis: 25%;
+  flex-basis: 34%;
   order: 1;
   padding: 20px;
   height: 100%;
-  border: 1px dashed rgb(99, 89, 89);
+  padding: 20px;
+  /* border: 1px dashed rgb(99, 89, 89); */
 }
 
 .App-content-column {
   display: flex;
   flex-direction: column;
-  border: 1px dashed rgb(99, 89, 89);
+  border-radius: 15px;
+  border: 1px solid rgba(215, 211, 211, 0.955);
+  padding: 20px;
 }
 
 .App-content-element {
-  border: 1px dashed rgb(99, 89, 89);
+  /* border: 1px dashed rgb(99, 89, 89); */
   flex: 1;
 }
 .App-text-container {
   flex-basis: 50%;
   order: 2;
   padding: 20px;
-  border: 1px dashed rgb(99, 89, 89);
+  /* border: 1px dashed rgb(99, 89, 89); */
 }
 
 .App-header {
@@ -74,11 +80,16 @@
 }
 
 .background-white {
+  transition: all 0.5s ease;
   background-color: rgba(255, 255, 255);
+  border-radius: 15px;
 }
 
 .background-grey {
-  background-color: rgb(45, 46, 47);
+  transition: all 0.5s ease;
+  background-color: rgba(215, 211, 211, 0.955);
+  border-radius: 15px;
+  /* rgba(215, 211, 211, 0.955) */
 }
 
 .box-scroll {

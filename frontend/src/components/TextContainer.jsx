@@ -34,10 +34,8 @@ export default function TextContainer() {
     tryGetStoryText()},[setStoryText,storyTree]);    
 
 return (
-    <div className="box-scroll">
-      <Container borderWidth='1px' borderRadius='lg' overflow='hidden'>
+    <div>
         {storyText}
-      </Container>
     </div>
   );
 }

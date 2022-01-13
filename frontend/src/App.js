@@ -8,7 +8,7 @@ import SliderContainer from "./components/SliderContainer";
 import TextContainer from "./components/TextContainer";
 // import OrgChart from "./components/OrgChart"
 import Header from "./components/Header";
-import { Divider } from "@chakra-ui/react";
+import { Container, Divider } from "@chakra-ui/react";
 
 export const UserContext = React.createContext({
   user: "",
@@ -53,7 +53,7 @@ function App() {
               <div className="App-header">
                 <Header />
               </div>
-              <Divider></Divider>
+              {/* <Divider></Divider> */}
               <div className="App-row-container">
                 <div className="App-content-container-75">
                   <div className="App-content-column">
@@ -67,7 +67,7 @@ function App() {
                   </div>
                 </div>
               </div>
-              <Divider></Divider>
+              {/* <Divider></Divider> */}
               <div>
                 <SliderContainer></SliderContainer>
                 <ControlsContainer></ControlsContainer>
