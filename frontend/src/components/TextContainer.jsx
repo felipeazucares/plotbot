@@ -18,7 +18,7 @@ export default function TextContainer() {
                  })
             if (response.status===200 && response.statusText==="OK"){
                 const result = await response.json()
-                console.log(`storyTree:${JSON.stringify(result.data.story)}`)
+                console.log(`storyText:${JSON.stringify(result.data.text)}`)
                 setStoryText(result.data.text)
 
             } else {

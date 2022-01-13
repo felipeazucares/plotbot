@@ -23,35 +23,36 @@ export default function OrgChartTree() {
 
         function returnNode2(newObj,currentTree, count){
           count = count + 1
-            //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
-            let currentKey = Object.keys(currentTree)[0]
-            //const objName = truncateReplace(currentTree[currentKey].data.text,3)
-            if(currentTree[currentKey].children){
-              newObj= {_id: currentKey, name: count, attributes: {text:currentTree[currentKey].data.text},children:[]}
-            }
-            else {
-              
-              newObj= {_id: currentKey, name: count, attributes: {text:currentTree[currentKey].data.text}}
-            }
-            console.log("current item:" + currentKey);
-            if (currentTree[currentKey].children){
-                console.log("children detected creating newObj.children=[]");
-                currentTree[currentKey]["children"].forEach((child) =>{
-                    console.log("processing child:" + Object.keys(child)[0]);
-                    newObj.children.push(returnNode2(newObj,child, count))
-                })
-            }
-            else {
-                console.log("no children for :" + currentKey);
-                console.log("returning newObj:" + JSON.stringify(newObj));
-                return newObj
-            }
-            return newObj
+          let objName = count.toString()
+          //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
+          let currentKey = Object.keys(currentTree)[0]
+          //const objName = truncateReplace(currentTree[currentKey].data.text,3)
+          if(currentTree[currentKey].children){
+            newObj= {_id: currentKey, name: objName, attributes: {text:currentTree[currentKey].data.text},children:[]}
+          }
+          else {
+            
+            newObj= {_id: currentKey, name: count, attributes: {text:currentTree[currentKey].data.text}}
+          }
+          console.log("current item:" + currentKey);
+          if (currentTree[currentKey].children){
+              console.log("children detected creating newObj.children=[]");
+              currentTree[currentKey]["children"].forEach((child) =>{
+                  console.log("processing child:" + Object.keys(child)[0]);
+                  newObj.children.push(returnNode2(newObj,child, count))
+              })
+          }
+          else {
+              console.log("no children for :" + currentKey);
+              console.log("returning newObj:" + JSON.stringify(newObj));
+              return newObj
+          }
+          return newObj
         }
 
 
     function convertTree(inputTree){
-
+        console.log("inputTree:" + JSON.stringify(inputTree));    
         const newTree = returnNode2({}, inputTree,0)
         console.log(newTree);        
         return newTree
@@ -170,9 +171,9 @@ export default function OrgChartTree() {
     <Tooltip placement='bottom' closeDelay={200} arrowSize={20}hasArrow bg='orange.400'label={nodeDatum.attributes.text }>
 
       <g>
-        <circle r="10" bg={true} style={{}} onClick={() => handleNodeClick(nodeDatum)}/>
+        <circle r="10" onClick={() => handleNodeClick(nodeDatum)}/>
         <text fill="blue.500" strokeWidth="0" x="15" onClick={toggleNode}>
-          {nodeDatum.name}
+          {nodeDatum.name} 
         </text>
         {/* {nodeDatum.attributes?.text && (
           <text fill="grey" x="20" y="20" strokeWidth="0">
