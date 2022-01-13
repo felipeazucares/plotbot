@@ -87,7 +87,7 @@ import {
 
     return (
         <div>
-            {isLoggedIn ? <div>{username} successfully logged in</div> : renderLoginForm}
+            {isLoggedIn ? null : renderLoginForm}
         </div>
   )
 }
