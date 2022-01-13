@@ -63,7 +63,7 @@ function App() {
                 <div className="App-content-container-25">
                   <div className="App-content-column">
                     <TextContainer className="App-content-element"></TextContainer>
-                    <LoginForm></LoginForm>
+                    {/* <LoginForm></LoginForm> */}
                   </div>
                 </div>
               </div>

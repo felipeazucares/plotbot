@@ -22,16 +22,15 @@ export default function TextContainer() {
     // const handleUsernameChange = (inputValue) => setUsername(inputValue.target.value)
     // const handlePasswordChange = (inputValue) => setPassword(inputValue.target.value)
 
-    const tryLogin = async (event) => 
+    const tryGetStoryText = async () => 
     {
-        // don"t reload the page
-        event.preventDefault()
+
         // now cook up the form
         let formData = new FormData()
         formData.append("grant_type","password")
         formData.append("scope","story:reader story:writer")
-        formData.append("username","felipeazucares")
-        formData.append("password","BlackM1lk")
+        formData.append("username","unittestuser")
+        formData.append("password","don't look now")
         try{            
             const response = await fetch("http://localhost:9000/login",{method:"POST", body: formData, credentials:"include"})
             if (response.status===200 && response.statusText==="OK"){
@@ -40,16 +39,16 @@ export default function TextContainer() {
                 setUser(username)
                 
             } else {
+                window.alert(`Login failed with status:${response.status} - ${response.statusText}`)
                 console.error(`Login failed with status:${response.status} - ${response.statusText}`)
             }
         }
         catch(error){
-            console.error(`Exception occured loggin in: ${error}`)
+            console.error(`Exception occured logging in: ${error}`)
+            window.alert(`Exception occured logging in: ${error}`)
         }
-    }    
+        
 
-    const tryGetStoryText = async () => 
-    {
         try{            
             const response = await fetch("http://localhost:9000/text",
                 {
@@ -69,8 +68,7 @@ export default function TextContainer() {
         }
     }
 
-    // document.body.style.background = {background};
-    tryGetStoryText()},[setStoryText,storyTree]);    
+    tryGetStoryText()},[setStoryText,storyTree,setUser,username]);    
 
 return (
     <div style={{height: "40vh"}} >

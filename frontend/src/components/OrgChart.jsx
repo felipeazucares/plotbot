@@ -97,6 +97,30 @@ export default function OrgChartTree() {
     
     const tryGetText = async (parent_id,promptText) => {
 
+      //first login so we don't time out  - don't have time to build modal forms
+
+        let formData = new FormData()
+        formData.append("grant_type","password")
+        formData.append("scope","story:reader story:writer")
+        formData.append("username","unittestuser")
+        formData.append("password","don't look now")
+        try{            
+            const response = await fetch("http://localhost:9000/login",{method:"POST", body: formData, credentials:"include"})
+            if (response.status===200 && response.statusText==="OK"){
+                console.log("logged in successfully")
+               
+            } else {
+                window.alert(`Login failed with status:${response.status} - ${response.statusText}`)
+                console.error(`Login failed with status:${response.status} - ${response.statusText}`)
+            }
+        }
+        catch(error){
+            console.error(`Exception occured logging in: ${error}`)
+            window.alert(`Exception occured logging in: ${error}`)
+        }
+        
+
+
       // return the end of the first sentence in the provided text
       function getlastSentence(promptText) {
         const sentenceTerminators = [".","!","?",".'","!'","?'",'."','?"','!"']
