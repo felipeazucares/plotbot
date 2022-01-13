@@ -1,6 +1,6 @@
 # Hairy Plotter
 
-DEV.TO Hackathon Project - interactive fiction generation using aitextgen library &amp; treelib
+DEV.TO Hackathon Project - interactive fiction generation using aitextgen library &amp; and MongoDB Atlas and React
 My submission to the MongoDB Atlas Hackathon on DEV!
 
 ---
