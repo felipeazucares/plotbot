@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  web:
+    image: "felipeazucares/hairy-plotter:latest"
+    #build: .
+    ports:
+      - "9000:9000"
+    # volumes:
+    #   - .:/code
+  redis:
+    image: "redis:alpine"
+    command: redis-server 
+    # command: redis-server --requirepass hashing-bibliotech
+    ports:
+      - "6381:6379"
