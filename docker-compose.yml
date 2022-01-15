@@ -9,7 +9,7 @@ services:
     ports:
       - 6380:6379
   api:
-    image: "felipeazucares/hairy-plotter:latest"
+    image: "felipeazucares/hp-api:latest"
     # build: backend/ .
     links:
       - redis:redis
