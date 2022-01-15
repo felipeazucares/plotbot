@@ -35,7 +35,7 @@ return (
       aria-label="Creativity"
     >
       <SliderMark value={1} mt='1' ml='-2.5' fontSize='sm'>
-        Walter Kronkite
+        Walter Cronkite
       </SliderMark>
       <SliderMark value={47} mt='1' ml='-2.5' fontSize='sm'>
         Ernest Hemmingway
