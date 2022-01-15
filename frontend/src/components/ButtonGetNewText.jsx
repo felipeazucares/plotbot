@@ -15,7 +15,7 @@ export default function GetNewTextButton() {
     {
 
         try{            
-            const response = await fetch("http://localhost:9000/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
+            const response = await fetch("http://localhost:8450/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
             if (response.status===200 && response.statusText==="OK"){
                 console.log("get text")
                 const result = await response.json()
@@ -32,7 +32,7 @@ export default function GetNewTextButton() {
         console.log(`text:${JSON.stringify(text)}`);
         // no that we have the text add it onto the the last item in the tree
         try{            
-            const response = await fetch("http://localhost:9000/story/?parent_id=1976c33e-6c6e-11ec-b1ed-f01898e87167",{method:"post", body: JSON.stringify(text), credentials:"include", headers: {"Content-Type": "application/json"}})
+            const response = await fetch("http://localhost:8450/story/?parent_id=1976c33e-6c6e-11ec-b1ed-f01898e87167",{method:"post", body: JSON.stringify(text), credentials:"include", headers: {"Content-Type": "application/json"}})
             if (response.status===200 && response.statusText==="OK"){
                 console.log("save text to db")
                 const result = await response.json()
