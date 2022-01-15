@@ -1,0 +1,10 @@
+name: api
+command: bash
+sync:
+- .:/code
+forward:
+- 9000:9000
+reverse:
+- 9000:9000
+volumes:
+- /root/.cache/pip

@@ -14,7 +14,7 @@ services:
     links:
       - redis:redis
     ports:
-      - 9000:9000
+      - 8500:9000
   ui:
     image: "felipeazucares/hp-ui:latest"
     ports:
