@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16.13.2-alpine3.14
 WORKDIR /code/
 # copy all the code across
 COPY . /code

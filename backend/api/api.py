@@ -94,6 +94,8 @@ app.add_middleware(
         "127.0.0.1:300",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3000/",
+        "https://ui-felipeazucares.cloud.okteto.net/"
+        "https://api-felipeazucares.cloud.okteto.net/",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
