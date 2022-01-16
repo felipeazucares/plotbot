@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 // import logo from "./logo.svg";
 import "./App.css";
-import LoginForm from "./components/LoginForm";
 import TreeContainer from "./components/TreeContainer";
 import ControlsContainer from "./components/ControlsContainer";
 import SliderContainer from "./components/SliderContainer";
 import TextContainer from "./components/TextContainer";
 // import OrgChart from "./components/OrgChart"
 import Header from "./components/Header";
-import { Container, Divider } from "@chakra-ui/react";
 
 export const UserContext = React.createContext({
   user: "",
