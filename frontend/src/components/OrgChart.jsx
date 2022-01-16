@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect} from "react"
 import Tree from "react-d3-tree"
-import './custom-tree.css'
 import { useCenteredTree } from "./Helpers";
 import { StoryTreeContext,TemperatureContext } from "../App"
 import { Spinner } from '@chakra-ui/react'
