@@ -98,7 +98,6 @@ app.add_middleware(
     allow_credentials=True,
     expose_headers=["set.cookie"],
 )
-
 oauth = Authentication()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
