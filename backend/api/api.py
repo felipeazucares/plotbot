@@ -84,13 +84,9 @@ console_display = ConsoleDisplay()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:",
         "http://localhost",
-        "http://localhost:8450/",
-        "http://127.0.0.1:8450",
         "http://localhost:3000",
         "localhost:3000",
-        "http://localhost:3000/",
         "127.0.0.1:3000",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3000/",
