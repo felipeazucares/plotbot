@@ -5,5 +5,5 @@ cd ../backend
 docker build -t felipeazucares/hp-api .
 docker push felipeazucares/hp-api
 cd ..
-okteto context create
-okteto stack deploy --build
+# okteto context create
+# okteto stack deploy --build
