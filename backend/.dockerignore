@@ -5,4 +5,4 @@ api/__pycache__/
 nodemodules/
 plotbot.log
 test_routes.py
-.git
+Dockerfile
