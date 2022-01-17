@@ -54,7 +54,7 @@ export default function ButtonRestart() {
                     {
                         credentials:"include"
                     })
-                if (response.status===200 && response.statusText==="OK"){
+                if (response.status===200){
                     const result = await response.json()
                     console.log(`storyTree:${JSON.stringify(result.data.story)}`)
                     setStoryTree(convertTree(result.data.story))
@@ -76,7 +76,7 @@ export default function ButtonRestart() {
                 {   method: "DELETE",
                     credentials:"include"
                  })
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
                 const result = await response.json()
                 console.log(`${JSON.stringify(result.data)}`)
                 //setStoryTree({})
@@ -94,7 +94,7 @@ export default function ButtonRestart() {
         }
         try{            
             const response = await fetch(`https://api-felipeazucares.cloud.okteto.net/story/?parent_id=`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
             console.log("save text to db")
             const result = await response.json()
             console.log(`returned text: ${JSON.stringify(result)}`)
