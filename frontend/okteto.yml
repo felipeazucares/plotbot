@@ -1,0 +1,7 @@
+name: ui
+command: sh
+sync:
+- .:/code
+forward:
+- 9229:9229
+- 3000:3000
