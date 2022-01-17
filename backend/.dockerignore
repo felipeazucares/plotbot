@@ -1,7 +1,8 @@
 aitextgen/
+__pycache__/
+.pytest_cache/
+api/__pycache__/
 nodemodules/
 plotbot.log
 test_routes.py
-api/__pycache__
-__pycache__
-.pytest_cache
+.git
