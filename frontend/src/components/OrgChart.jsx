@@ -78,7 +78,7 @@ export default function OrgChartTree() {
                 {
                     credentials:"include"
                  })
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
                 const result = await response.json()
                 console.log(`storyTree:${JSON.stringify(result.data.story)}`)
                 setStoryTree(convertTree(result.data.story))
