@@ -33,7 +33,7 @@ export default function TextContainer() {
         formData.append("password","don't look now")
         try{            
             const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/login",{method:"POST", body: formData, credentials:"include"})
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
                 console.log("logged in successfully")
                 setIsLoggedIn(true)
                 setUser(username)
