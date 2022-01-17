@@ -13,11 +13,12 @@ services:
     # build: backend/ .
     links:
       - redis:redis
+    expose:
+      - 8450
     ports:
       - 8450:8450
   ui:
     image: "felipeazucares/hp-ui:latest"
     ports:
       - 3000:3000
-    # volumes:
-    #   - .:/code
+

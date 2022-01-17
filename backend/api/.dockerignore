@@ -1,0 +1,7 @@
+aitextgen/
+nodemodules/
+plotbot.log
+test_routes.py
+api/__pycache__
+__pycache__
+.pytest_cache
