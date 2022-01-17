@@ -166,7 +166,7 @@ export default function OrgChartTree() {
         console.log(`Generating text ... with temperature:${temperature}`)
         console.log("------------------------------------------------");
         const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
-        if (response.status===200 && response.statusText==="OK"){
+        if (response.status===200){
           result = await response.json()
           console.log(`generated text:${JSON.stringify(result)}`)
           setText(result.data)
@@ -186,7 +186,7 @@ export default function OrgChartTree() {
 
       try{            
         const response = await fetch(`https://api-felipeazucares.cloud.okteto.net:8450/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
-        if (response.status===200 && response.statusText==="OK"){
+        if (response.status===200){
           console.log("save text to db")
           const result = await response.json()
           console.log(`returned text: ${JSON.stringify(result)}`)

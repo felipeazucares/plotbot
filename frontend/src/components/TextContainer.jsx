@@ -54,7 +54,7 @@ export default function TextContainer() {
                 {
                     credentials:"include"
                  })
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
                 const result = await response.json()
                 console.log(`storyText:${JSON.stringify(result.data.text)}`)
                 setStoryText(result.data.text)
