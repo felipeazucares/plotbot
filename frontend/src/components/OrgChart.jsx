@@ -74,7 +74,7 @@ export default function OrgChartTree() {
     const tryGetStoryTree = async () => 
     {
         try{            
-            const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/story",
+            const response = await fetch("https://api-felipeazucares.cloud.okteto.net/story",
                 {
                     credentials:"include"
                  })
@@ -104,7 +104,7 @@ export default function OrgChartTree() {
         formData.append("username","unittestuser")
         formData.append("password","don't look now")
         try{            
-            const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/login",{method:"POST", body: formData, credentials:"include"})
+            const response = await fetch("https://api-felipeazucares.cloud.okteto.net/login",{method:"POST", body: formData, credentials:"include"})
             if (response.status===200){
                 console.log("logged in successfully")
                
@@ -165,7 +165,7 @@ export default function OrgChartTree() {
         showSpinner(true)
         console.log(`Generating text ... with temperature:${temperature}`)
         console.log("------------------------------------------------");
-        const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
+        const response = await fetch("https://api-felipeazucares.cloud.okteto.net/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200){
           result = await response.json()
           console.log(`generated text:${JSON.stringify(result)}`)
@@ -185,7 +185,7 @@ export default function OrgChartTree() {
       console.log(`text to store:${textPayload.text}`);
 
       try{            
-        const response = await fetch(`https://api-felipeazucares.cloud.okteto.net:8450/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
+        const response = await fetch(`https://api-felipeazucares.cloud.okteto.net/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200){
           console.log("save text to db")
           const result = await response.json()

@@ -50,7 +50,7 @@ export default function ButtonRestart() {
     const tryGetStoryTree = async () => 
         {
             try{            
-                const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/story",
+                const response = await fetch("https://api-felipeazucares.cloud.okteto.net/story",
                     {
                         credentials:"include"
                     })
@@ -72,7 +72,7 @@ export default function ButtonRestart() {
     const tryRestart = async () => 
     {
         try{            
-            const response = await fetch("https://api-felipeazucares.cloud.okteto.net:8450/save",
+            const response = await fetch("https://api-felipeazucares.cloud.okteto.net/save",
                 {   method: "DELETE",
                     credentials:"include"
                  })
@@ -93,7 +93,7 @@ export default function ButtonRestart() {
             text: "Harry Potter peered over his spectacles. He waved his magic wand and solemnly chanted the words of the spell. 'Indominus Petronus!' he cried with a final flourish. There was an almighty bang and a griffin appeared in a puff of smoke. 'Hello, Harry Potter,' the griffin said."
         }
         try{            
-            const response = await fetch(`https://api-felipeazucares.cloud.okteto.net:8450/story/?parent_id=`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
+            const response = await fetch(`https://api-felipeazucares.cloud.okteto.net/story/?parent_id=`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
             if (response.status===200 && response.statusText==="OK"){
             console.log("save text to db")
             const result = await response.json()
