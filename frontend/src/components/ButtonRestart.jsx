@@ -2,13 +2,13 @@ import React, {useContext} from "react"
 import {
     Button
 } from "@chakra-ui/react"
-import { StoryTreeContext } from "../App"
+import { StoryTreeContext,URLContext  } from "../App"
 
 
 export default function ButtonRestart() {
 
     const {storyTree, setStoryTree} = useContext(StoryTreeContext)
-
+    const {baseAPIURL} = useContext(URLContext)
     function returnNode2(newObj,currentTree, count){
         count = count + 1
         //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
@@ -50,7 +50,7 @@ export default function ButtonRestart() {
     const tryGetStoryTree = async () => 
         {
             try{            
-                const response = await fetch("https://api-felipeazucares.cloud.okteto.net//story",
+                const response = await fetch(`${baseAPIURL}/story`,
                     {
                         credentials:"include"
                     })
@@ -72,7 +72,7 @@ export default function ButtonRestart() {
     const tryRestart = async () => 
     {
         try{            
-            const response = await fetch("https://api-felipeazucares.cloud.okteto.net//save",
+            const response = await fetch(`${baseAPIURL}/save`,
                 {   method: "DELETE",
                     credentials:"include"
                  })
@@ -93,7 +93,7 @@ export default function ButtonRestart() {
             text: "Harry Potter peered over his spectacles. He waved his magic wand and solemnly chanted the words of the spell. 'Indominus Petronus!' he cried with a final flourish. There was an almighty bang and a griffin appeared in a puff of smoke. 'Hello, Harry Potter,' the griffin said."
         }
         try{            
-            const response = await fetch(`https://api-felipeazucares.cloud.okteto.net//story/?parent_id=`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
+            const response = await fetch(`${baseAPIURL}/story/?parent_id=`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
             if (response.status===200){
             console.log("save text to db")
             const result = await response.json()
