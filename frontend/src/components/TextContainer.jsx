@@ -41,7 +41,9 @@ export default function TextContainer() {
             const response = await fetch(`${baseAPIURL}/login`,{method:"POST", body: formData, credentials:"include"})
             if (response.status===200){
                 console.log("logged in successfully")
+                console.log("setting status")
                 setIsLoggedIn(true)
+                console.log("setting user")
                 setUser(username)
                 
             } else {
@@ -56,18 +58,18 @@ export default function TextContainer() {
         
 
         try{            
-            const response = await fetch({baseAPIURL},
+            const response = await fetch(`${baseAPIURL}/text`,
                 {
                     credentials:"include"
                  })
             if (response.status===200){
-                const result = await response.json()
+                const result = await response
                 console.log("Successfully connected. Parsing response");
-                // console.log(`storyText:${JSON.stringify(result.data.text)}`)
+                console.log(response)
                 setStoryText(result.data.text)
 
             } else {
-                console.error(`get /text failed with status:${response.status} - ${response.statusText}`)
+                console.error(`Get ${baseAPIURL}/text failed with status:${response.status} - ${response.statusText}`)
             }
         }
         catch(error){
