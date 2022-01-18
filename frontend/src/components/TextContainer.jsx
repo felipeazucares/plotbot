@@ -62,7 +62,8 @@ export default function TextContainer() {
                  })
             if (response.status===200){
                 const result = await response.json()
-                console.log(`storyText:${JSON.stringify(result.data.text)}`)
+                console.log("Successfully connected. Parsing response");
+                // console.log(`storyText:${JSON.stringify(result.data.text)}`)
                 setStoryText(result.data.text)
 
             } else {
@@ -74,7 +75,7 @@ export default function TextContainer() {
         }
     }
 
-    tryGetStoryText()},[baseAPIURL,setStoryText,storyTree,username]);    
+    tryGetStoryText()},[baseAPIURL,setStoryText,storyTree,username,setUser]);    
 
 return (
     <div style={{height: "55vh"}} >
