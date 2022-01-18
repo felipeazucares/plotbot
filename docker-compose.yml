@@ -19,6 +19,8 @@ services:
       - 8450:8450
   ui:
     image: "felipeazucares/hp-ui:latest"
+    links:
+      - api:api
     ports:
       - 3000:3000
 

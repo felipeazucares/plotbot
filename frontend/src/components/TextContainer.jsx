@@ -32,7 +32,7 @@ export default function TextContainer() {
         formData.append("username","unittestuser")
         formData.append("password","don't look now")
         try{            
-            const response = await fetch("https://api:8450/login",{method:"POST", body: formData, credentials:"include"})
+            const response = await fetch("https://api-felipeazucares.cloud.okteto.net//login",{method:"POST", body: formData, credentials:"include"})
             if (response.status===200){
                 console.log("logged in successfully")
                 setIsLoggedIn(true)
@@ -50,7 +50,7 @@ export default function TextContainer() {
         
 
         try{            
-            const response = await fetch("https://api:8450/text",
+            const response = await fetch("https://api-felipeazucares.cloud.okteto.net//text",
                 {
                     credentials:"include"
                  })
