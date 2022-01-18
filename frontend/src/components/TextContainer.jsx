@@ -1,17 +1,16 @@
 import React, { useContext, useState, useEffect} from "react"
-import { StoryTreeContext,StoryTextContext,UserContext } from "../App"
-import { Container } from '@chakra-ui/react'
+import { StoryTreeContext,StoryTextContext,URLContext} from "../App"
 
 export default function TextContainer() {
     const {storyText, setStoryText} = useContext(StoryTextContext)
-    const {storyTree, setStoryTree} = useContext(StoryTreeContext)
+    const {storyTree} = useContext(StoryTreeContext)
+    const {baseAPIURL} = useContext(URLContext)
 
     // go and get the story from the API
-    
     // const [password, setPassword] = useState("")
-    const [username, setUsername] = useState("")
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const {user,setUser} = useContext(UserContext)
+    const [username] = useState("")
+    // const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // const {user,setUser} = useContext(UserContext)
     
     useEffect(() => {
 
@@ -32,11 +31,10 @@ export default function TextContainer() {
         formData.append("username","unittestuser")
         formData.append("password","don't look now")
         try{            
-            const response = await fetch("https://api-felipeazucares.cloud.okteto.net//login",{method:"POST", body: formData, credentials:"include"})
+            const response = await fetch(`${baseAPIURL}/login`,{method:"POST", body: formData, credentials:"include"})
             if (response.status===200){
                 console.log("logged in successfully")
-                setIsLoggedIn(true)
-                setUser(username)
+                // setUser(username)
                 
             } else {
                 window.alert(`Login failed with status:${response.status} - ${response.statusText}`)
@@ -50,7 +48,7 @@ export default function TextContainer() {
         
 
         try{            
-            const response = await fetch("https://api-felipeazucares.cloud.okteto.net//text",
+            const response = await fetch({baseAPIURL},
                 {
                     credentials:"include"
                  })
@@ -68,7 +66,7 @@ export default function TextContainer() {
         }
     }
 
-    tryGetStoryText()},[setStoryText,storyTree,setUser,username]);    
+    tryGetStoryText()},[baseAPIURL,setStoryText,storyTree,username]);    
 
 return (
     <div style={{height: "55vh"}} >

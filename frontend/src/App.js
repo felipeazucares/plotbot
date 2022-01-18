@@ -35,7 +35,6 @@ export const TemperatureContext = React.createContext({
 function App() {
   const [baseAPIURL, setURL] = useState("http://localhost:8450");
   const [user, setUser] = useState("not logged in");
-  const value = { user, setUser };
   // this will contain the tree representation
   const [storyText, setStoryText] = useState("");
   const [temperature, setTemperature] = useState(parseFloat(0.7));
@@ -47,15 +46,17 @@ function App() {
     },
   });
 
+  const value = { user, setUser };
   const tree = { storyTree, setStoryTree };
   const text = { storyText, setStoryText };
   const temp = { temperature, setTemperature };
+  const url = { baseAPIURL, setURL };
   return (
     <UserContext.Provider value={value}>
       <StoryTreeContext.Provider value={tree}>
         <StoryTextContext.Provider value={text}>
           <TemperatureContext.Provider value={temp}>
-            <URLContext.Provider value={baseAPIURL}>
+            <URLContext.Provider value={url}>
               <div className="App">
                 <div className="App-header">
                   <Header />
