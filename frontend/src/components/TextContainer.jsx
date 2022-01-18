@@ -71,7 +71,7 @@ export default function TextContainer() {
     tryGetStoryText()},[setStoryText,storyTree,setUser,username]);    
 
 return (
-    <div style={{height: "40vh"}} >
+    <div style={{height: "55vh"}} >
         {storyText}
     </div>
   );
