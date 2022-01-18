@@ -7,6 +7,13 @@ export default function TextContainer() {
     const {baseAPIURL} = useContext(URLContext)
 
     // go and get the story from the API
+    
+    // const [password, setPassword] = useState("")
+    const [username, setUsername] = useState("")
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const {user,setUser} = useContext(UserContext)
+
+    // go and get the story from the API
     // const [password, setPassword] = useState("")
     const [username] = useState("")
     // const [isLoggedIn, setIsLoggedIn] = useState(false);
