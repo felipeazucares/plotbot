@@ -41,7 +41,8 @@ export default function TextContainer() {
             const response = await fetch(`${baseAPIURL}/login`,{method:"POST", body: formData, credentials:"include"})
             if (response.status===200){
                 console.log("logged in successfully")
-                // setUser(username)
+                setIsLoggedIn(true)
+                setUser(username)
                 
             } else {
                 window.alert(`Login failed with status:${response.status} - ${response.statusText}`)
