@@ -59,13 +59,11 @@ export default function TextContainer() {
 
         try{            
             const response = await fetch(`${baseAPIURL}/text`,
-                {
+            {
                     credentials:"include"
                  })
             if (response.status===200){
-                const result = await response
-                console.log("Successfully connected. Parsing response");
-                console.log(response)
+                const result = await response.json()
                 setStoryText(result.data.text)
 
             } else {
