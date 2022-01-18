@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect} from "react"
-import { StoryTreeContext,StoryTextContext,URLContext} from "../App"
+import { StoryTreeContext,StoryTextContext,URLContext, UserContext} from "../App"
 
 export default function TextContainer() {
     const {storyText, setStoryText} = useContext(StoryTextContext)
