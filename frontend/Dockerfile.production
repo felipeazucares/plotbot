@@ -2,8 +2,8 @@ FROM node:16.13.2-alpine3.14
 WORKDIR /code/
 # copy all the code across
 COPY . /code
-COPY .env_prod .env
 # copy across the docker version of the .env file  so we connect to containerised redis 
 EXPOSE 3000
 RUN npm install
+ENV BASEAPIURL=http://api-felipeazucares.okteto.net
 CMD ["npm","start"]

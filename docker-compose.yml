@@ -10,15 +10,21 @@ services:
       - 6380:6379
   api:
     image: "felipeazucares/hp-api:latest"
-    # build: backend/ .
+    build: backend/
     links:
       - redis:redis
     expose:
       - 8450
     ports:
       - 8450:8450
+
   ui:
     image: "felipeazucares/hp-ui:latest"
+    build: frontend/
+    environment:
+      - BASEAPIURL=http://api-felipeazucares.okteto.net
+    env_file:
+      - frontend/.env
     links:
       - api:api
     ports:

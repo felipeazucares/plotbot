@@ -33,7 +33,14 @@ export const TemperatureContext = React.createContext({
 });
 
 function App() {
-  const [baseAPIURL, setURL] = useState("http://localhost:8450");
+  console.log(process.env);
+
+  let baseurl = process.env.BASEAPIURL;
+  if (baseurl === undefined) {
+    baseurl = "http://localhost:8450";
+  }
+
+  const [baseAPIURL, setURL] = useState(baseurl);
   const [user, setUser] = useState("not logged in");
   // this will contain the tree representation
   const [storyText, setStoryText] = useState("");
