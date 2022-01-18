@@ -38,6 +38,7 @@ function App() {
   let baseurl = process.env.BASEAPIURL;
   if (baseurl === undefined) {
     baseurl = "http://localhost:8450";
+    console.error(`No BASEAPIURL env value found setting to: ${baseurl}`);
   }
 
   const [baseAPIURL, setURL] = useState(baseurl);

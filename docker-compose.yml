@@ -20,11 +20,9 @@ services:
 
   ui:
     image: "felipeazucares/hp-ui:latest"
-    build: frontend/
     environment:
       - BASEAPIURL=http://api-felipeazucares.okteto.net
-    env_file:
-      - frontend/.env
+    build: frontend/
     links:
       - api:api
     ports:
