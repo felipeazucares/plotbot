@@ -237,7 +237,7 @@ export default function OrgChartTree() {
   return (
     // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
     <StoryTreeContext.Provider value={storyTree}>
-    <div style={{height: "40vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
+    <div style={{height: "55vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
       <Tree data={storyTree}
       orientation="vertical" 
       rootNodeClassName="node_root"
