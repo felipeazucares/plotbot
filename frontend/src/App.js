@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import env from "react-dotenv";
+// import env from "react-dotenv";
 // import logo from "./logo.svg";
 import "./App.css";
 import TreeContainer from "./components/TreeContainer";
@@ -9,9 +9,9 @@ import TextContainer from "./components/TextContainer";
 // import OrgChart from "./components/OrgChart"
 import Header from "./components/Header";
 
-export function MyComponent() {
-  return <div>env is: {env}</div>;
-}
+// export function MyComponent() {
+//   return <div>env is: {env.REACT_APP_BASEAPIURL}</div>;
+// }
 
 export const URLContext = React.createContext({
   baseAPIURL: "",
@@ -38,9 +38,9 @@ export const TemperatureContext = React.createContext({
 });
 
 function App() {
-  console.log(process.env);
+  console.log(process.env.REACT_APP_BASEAPIURL);
 
-  let baseurl = process.env.BASEAPIURL;
+  let baseurl = process.env.REACT_APP_BASEAPIURL;
   if (baseurl === undefined) {
     baseurl = "http://localhost:8450";
     console.error(`No BASEAPIURL env value found setting to: ${baseurl}`);
@@ -73,7 +73,6 @@ function App() {
               <div className="App">
                 <div className="App-header">
                   <Header />
-                  <MyComponent></MyComponent>
                 </div>
                 {/* <Divider></Divider> */}
                 <div className="App-row-container">
