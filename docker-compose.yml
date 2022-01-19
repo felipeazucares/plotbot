@@ -19,9 +19,11 @@ services:
       - 8450:8450
 
   ui:
+    env_file:
+      - ~/sites/plotbot/frontend/.env
+    # environment:
+    #   - BASEAPIURL=http://api-felipeazucares.okteto.net
     image: "felipeazucares/hp-ui:latest"
-    environment:
-      - BASEAPIURL=http://api-felipeazucares.okteto.net
     build: frontend/
     links:
       - api:api

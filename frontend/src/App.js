@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import env from "react-dotenv";
 // import logo from "./logo.svg";
 import "./App.css";
 import TreeContainer from "./components/TreeContainer";
@@ -7,6 +8,10 @@ import SliderContainer from "./components/SliderContainer";
 import TextContainer from "./components/TextContainer";
 // import OrgChart from "./components/OrgChart"
 import Header from "./components/Header";
+
+export function MyComponent() {
+  return <div>env is: {env}</div>;
+}
 
 export const URLContext = React.createContext({
   baseAPIURL: "",
@@ -68,6 +73,7 @@ function App() {
               <div className="App">
                 <div className="App-header">
                   <Header />
+                  <MyComponent></MyComponent>
                 </div>
                 {/* <Divider></Divider> */}
                 <div className="App-row-container">

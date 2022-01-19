@@ -4,5 +4,6 @@ WORKDIR /code/
 COPY . /code
 # copy across the docker version of the .env file  so we connect to containerised redis 
 EXPOSE 3000
+# ENV BASEAPIURL={$BASEAPIURL}
 RUN npm install
 CMD ["npm","start"]
