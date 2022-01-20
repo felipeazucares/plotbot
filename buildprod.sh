@@ -1,5 +1,5 @@
 cd ~/sites/plotbot/frontend
-docker build -t felipeazucares/hp-ui .
+docker build -f Dockerfile.prod -t felipeazucares/hp-ui .
 docker push felipeazucares/hp-ui
 cd ../backend
 docker build -t felipeazucares/hp-api .

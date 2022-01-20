@@ -2,7 +2,7 @@ version: "3.9"
 services:
   redis:
     image: "redis:alpine"
-    command: redis-server 
+    command: redis-server
     # command: redis-server --requirepass hashing-bibliotech
     expose:
       - 6379
@@ -20,13 +20,10 @@ services:
 
   ui:
     env_file:
-      - ~/sites/plotbot/frontend/.env
-    # environment:
-    #   - BASEAPIURL=http://api-felipeazucares.okteto.net
+      - ~/sites/plotbot/frontend/prod.env
     image: "felipeazucares/hp-ui:latest"
     build: frontend/
     links:
       - api:api
     ports:
       - 3000:3000
-
