@@ -24,9 +24,10 @@ export default function OrgChartTree() {
     function returnNode2(newObj,currentTree, count){
       count = count + 1
       let nodeName = count.toString()
-      // if (count <= 1 || count===undefined) {
-      //   nodeName = "click me"
-      // } 
+      if (count===1){
+        nodeName = "click me"
+      }
+
       //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
       let currentKey = Object.keys(currentTree)[0]
       //const objName = truncateReplace(currentTree[currentKey].data.text,3)
@@ -34,7 +35,7 @@ export default function OrgChartTree() {
         newObj= {_id: currentKey, name: nodeName, attributes: {text:currentTree[currentKey].data.text},children:[]}
       }
       else {
-        
+        nodeName = "click me"
         newObj= {_id: currentKey, name: nodeName, attributes: {text:currentTree[currentKey].data.text}}
       }
       console.log("current item:" + currentKey);
@@ -119,12 +120,12 @@ export default function OrgChartTree() {
         let foundIndex=-1
         let result=""
         for (let terminator of sentenceTerminators){
-          console.log(`currentEndIndex: ${currentEndIndex}`);
-          console.log(`foundIndex: ${foundIndex}`);
+          // console.log(`currentEndIndex: ${currentEndIndex}`);
+          // console.log(`foundIndex: ${foundIndex}`);
           // need to knock the last char off because that's always a full stop
           foundIndex = promptText.substring(0,promptText.length-1).lastIndexOf(terminator)
           if(foundIndex!==-1){
-            console.log(`${terminator} found at ${foundIndex}`);
+            // console.log(`${terminator} found at ${foundIndex}`);
             if (foundIndex>currentEndIndex){
               currentEndIndex = foundIndex
             }
@@ -156,8 +157,7 @@ export default function OrgChartTree() {
       try{            
         showSpinner(true)
         console.log(`Generating text ... with temperature:${temperature}`)
-        console.log("------------------------------------------------");
-        const response = await fetch(`${baseAPIURL}/text`,{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
+         const response = await fetch(`${baseAPIURL}/text`,{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
         if (response.status===200){
           result = await response.json()
           console.log(`generated text:${JSON.stringify(result)}`)
@@ -165,7 +165,6 @@ export default function OrgChartTree() {
         } else {
           console.error(`generating text failed with status:${response.status} - ${response.statusText}`)
         }
-        console.log("------------------------------------------------");
       }
       catch(error){
         console.error(`Exception occured generating text: ${error}`)
@@ -182,7 +181,6 @@ export default function OrgChartTree() {
           console.log("save text to db")
           const result = await response.json()
           console.log(`returned text: ${JSON.stringify(result)}`)
-          // setUser(username)
         } else {
           console.error(`save text failed with status:${response.status} - ${response.statusText}`)
         }
@@ -223,11 +221,9 @@ export default function OrgChartTree() {
 
   //render component on load
   useEffect(() => {
-    // document.body.style.background = {background};
     tryGetStoryTree()},[]);
 
   return (
-    // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
     <StoryTreeContext.Provider value={storyTree}>
     <div style={{height: "55vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
       <Tree data={storyTree}

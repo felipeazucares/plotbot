@@ -5,6 +5,7 @@ COPY requirements.txt /code/requirements.txt
 RUN /py3/bin/pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # copy all the code across
 COPY . /code
-
+# overrride the setting for this file so that it works in a container
+ENV REDISHOST=redis
 EXPOSE 8450
 CMD ["/py3/bin/python3", "main.py"]
