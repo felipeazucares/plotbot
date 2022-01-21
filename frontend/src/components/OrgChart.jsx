@@ -22,11 +22,11 @@ export default function OrgChartTree() {
   };
 
     function returnNode2(newObj,currentTree, count){
-      count = count + 1
       let nodeName = count.toString()
-      if (count===1){
-        nodeName = "click me"
+      if (count===0){
+        nodeName = "click me to start"
       }
+      count = count + 1
 
       //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
       let currentKey = Object.keys(currentTree)[0]
@@ -35,7 +35,6 @@ export default function OrgChartTree() {
         newObj= {_id: currentKey, name: nodeName, attributes: {text:currentTree[currentKey].data.text},children:[]}
       }
       else {
-        nodeName = "click me"
         newObj= {_id: currentKey, name: nodeName, attributes: {text:currentTree[currentKey].data.text}}
       }
       console.log("current item:" + currentKey);
@@ -193,6 +192,7 @@ export default function OrgChartTree() {
     }
     
     const renderNodeWithCustomEvents = ({nodeDatum,toggleNode,handleNodeClick}) => (
+
     <Tooltip placement='bottom' closeDelay={200} arrowSize={20}hasArrow bg='orange.400'label={nodeDatum.attributes.text }>
 
       <g>
@@ -203,6 +203,7 @@ export default function OrgChartTree() {
       </g>
     </Tooltip>
   )
+
     const handleNodeClick = async (nodeDatum) => {
       if (!nodeDatum.children){
         setIsBackgroundDim(true)
@@ -228,9 +229,9 @@ export default function OrgChartTree() {
     <div style={{height: "55vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
       <Tree data={storyTree}
       orientation="vertical" 
-      rootNodeClassName="node_root"
-      branchNodeClassName="node_branch"
-      leafNodeClassName="node_leaf"
+      // rootNodeClassName="node_root"
+      // branchNodeClassName="node_branch"
+      // leafNodeClassName="node_leaf"
       enableLegacyTransitions="true"
       transitionDuration="2000"
       collapsible="false"

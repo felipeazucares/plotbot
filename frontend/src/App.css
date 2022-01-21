@@ -89,7 +89,7 @@ body {
 #loader {
   position: fixed;
   z-index: 10;
-  left: 32%;
+  left: 25%;
   top: 36%;
   margin: auto;
 }

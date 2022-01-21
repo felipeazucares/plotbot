@@ -38,12 +38,10 @@ export const TemperatureContext = React.createContext({
 });
 
 function App() {
-  console.log(process.env.REACT_APP_BASEAPIURL);
-
   let baseurl = process.env.REACT_APP_BASEAPIURL;
   if (baseurl === undefined) {
     baseurl = "http://localhost:8450";
-    console.error(`No BASEAPIURL env value found setting to: ${baseurl}`);
+    console.log(`No BASEAPIURL env value found setting to: ${baseurl}`);
   }
 
   const [baseAPIURL, setURL] = useState(baseurl);
