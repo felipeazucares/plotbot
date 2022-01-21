@@ -1,14 +1,16 @@
-.flex_button {
-  flex-basis: 100%;
-  margin: 10px;
+body {
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif, Helvetica, sans-serif;
+  font-size: 14px;
 }
 
 .App {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  /* border: 1px dashed rgb(99, 89, 89); */
-  height: 100vh;
+  margin-left: auto;
+  margin-right: auto;
+  /* max-width: 70%; */
+  border-radius: 15px;
+  -webkit-box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
 }
 
 .App-row-container {
@@ -21,8 +23,6 @@
 }
 
 .App-controls-container {
-  /* border-radius: 15px;
-  border: 1px solid rgba(215, 211, 211, 0.955); */
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -30,21 +30,37 @@
 }
 
 .App-content-container-75 {
-  flex-basis: 66%;
-  order: 1;
-  padding: 20px;
-  height: 100%;
-  padding: 20px;
-  /* border: 1px dashed rgb(99, 89, 89); */
+  flex-basis: 60%;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-negative: 1;
+  flex-shrink: 1;
+  -ms-flex-preferred-size: 100px;
+  /* flex-basis: 100px; */
+  padding: 10px;
+  border-radius: 15px;
+  -webkit-box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  text-transform: capitalize;
+  text-align: center;
 }
 
 .App-content-container-25 {
-  flex-basis: 34%;
-  order: 1;
-  padding: 20px;
-  height: 100%;
-  padding: 20px;
-  /* border: 1px dashed rgb(99, 89, 89); */
+  flex-basis: 40%;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-negative: 1;
+  flex-shrink: 1;
+  -ms-flex-preferred-size: 100px;
+  /* flex-basis: 100px; */
+  padding: 10px;
+  border-radius: 15px;
+  -webkit-box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  text-transform: capitalize;
+  text-align: center;
 }
 
 .App-content-column {
@@ -56,15 +72,19 @@
   overflow: auto;
 }
 
-.App-content-element {
-  /* flex: 1; */
-}
 .App-text-container {
-  flex-basis: 50%;
-  order: 2;
-  padding: 20px;
-
-  /* border: 1px dashed rgb(99, 89, 89); */
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-preferred-size: 150px;
+  flex-basis: 150px;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: rgb(144, 177, 240);
+  color: white;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
 }
 
 .App-header {
@@ -112,4 +132,9 @@
   box-shadow: 0 0 20px 0 #ccc;
   opacity: 1;
   transition: opacity 0.5s linear;
+}
+
+.flex_button {
+  flex-basis: 100%;
+  margin: 10px;
 }

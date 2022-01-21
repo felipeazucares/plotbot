@@ -1,5 +1,7 @@
 nodemodules/
 plotbot.log
 test_routes.py
-../.git
+.git
+Dockerfile.dev
+Dockerfile.prod
 Dockerfile

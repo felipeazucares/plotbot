@@ -1,3 +1,4 @@
+# Build the image for local docker
 version: "3.9"
 services:
   redis:
@@ -10,7 +11,9 @@ services:
       - 6380:6379
   api:
     image: "felipeazucares/hp-api:latest"
-    build: backend/
+    build: 
+      context: backend/
+      dockerfile: Dockerfile
     links:
       - redis:redis
     expose:
@@ -19,10 +22,10 @@ services:
       - 8450:8450
 
   ui:
-    env_file:
-      - ~/sites/plotbot/frontend/dev.env
     image: "felipeazucares/hp-ui:latest"
-    build: frontend/
+    build: 
+      context: frontend/
+      dockerfile: Dockerfile.dev
     links:
       - api:api
     ports:

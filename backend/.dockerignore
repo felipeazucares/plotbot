@@ -1,4 +1,4 @@
-aitextgen/
+# aitextgen/
 __pycache__/
 .pytest_cache/
 api/__pycache__/
