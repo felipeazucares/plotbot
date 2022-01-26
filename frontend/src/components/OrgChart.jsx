@@ -22,11 +22,11 @@ export default function OrgChartTree() {
   };
 
     function returnNode2(newObj,currentTree, count){
-      let nodeName = count.toString()
-      if (count===0){
-        nodeName = "click me to start"
-      }
       count = count + 1
+      let nodeName = count.toString()
+      // if (count===0){
+      //   nodeName = "click me to start"
+      // }
 
       //recurse tree returned from mongo to d3_react_tree - RawNodeDatum format
       let currentKey = Object.keys(currentTree)[0]

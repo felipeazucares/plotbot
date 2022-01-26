@@ -53,7 +53,7 @@ function App() {
   const [storyTree, setStoryTree] = useState({
     name: "Something broke!",
     attributes: {
-      text: "Oops! Check you're logged in by clicking the Start button!",
+      text: "Nothing to read yet. Click the Start Here button!",
     },
   });
 
