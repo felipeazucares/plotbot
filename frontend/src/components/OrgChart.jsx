@@ -1,21 +1,21 @@
 import React, { useContext, useState, useEffect} from "react"
 import Tree from "react-d3-tree"
-import './custom-tree.css'
 import { useCenteredTree } from "./Helpers";
-import { StoryTreeContext,TemperatureContext } from "../App"
+import { StoryTreeContext,TemperatureContext,URLContext } from "../App"
 import { Spinner } from '@chakra-ui/react'
 import { Tooltip} from '@chakra-ui/react'
 
 
 export default function OrgChartTree() {
+  const {baseAPIURL} = useContext(URLContext)
   const {storyTree, setStoryTree} = useContext(StoryTreeContext)
   // const {storyText, setStoryText} = useContext(StoryTextContext)
   const {temperature, setTemperature} = useContext(TemperatureContext)
   const [translate, containerRef] = useCenteredTree()
-  const [text,setText] = useState("")
+  // const [text,setText] = useState("")
   const [isLoading, setLoading] = useState(false);
   const [isBackgroundDim,setIsBackgroundDim] = useState(false)
-  const [status,setStatus] = useState("")
+  // const [status,setStatus] = useState("")
 
   const showSpinner = () => {
     setLoading(currentIsLoaded => !currentIsLoaded)
@@ -63,23 +63,14 @@ export default function OrgChartTree() {
         }
 
 
-    function convertTree(inputTree){
-        console.log("inputTree:" + JSON.stringify(inputTree));    
-        const newTree = returnNode2({}, inputTree,0)
-        console.log(newTree);        
-        return newTree
-
-        }
-
-
     const tryGetStoryTree = async () => 
     {
         try{            
-            const response = await fetch("http://localhost:9000/story",
+            const response = await fetch(`${baseAPIURL}/story`,
                 {
                     credentials:"include"
                  })
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
                 const result = await response.json()
                 console.log(`storyTree:${JSON.stringify(result.data.story)}`)
                 setStoryTree(convertTree(result.data.story))
@@ -105,8 +96,8 @@ export default function OrgChartTree() {
         formData.append("username","unittestuser")
         formData.append("password","don't look now")
         try{            
-            const response = await fetch("http://localhost:9000/login",{method:"POST", body: formData, credentials:"include"})
-            if (response.status===200 && response.statusText==="OK"){
+            const response = await fetch(`${baseAPIURL}/login`,{method:"POST", body: formData, credentials:"include"})
+            if (response.status===200){
                 console.log("logged in successfully")
                
             } else {
@@ -166,11 +157,11 @@ export default function OrgChartTree() {
         showSpinner(true)
         console.log(`Generating text ... with temperature:${temperature}`)
         console.log("------------------------------------------------");
-        const response = await fetch("http://localhost:9000/text",{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
-        if (response.status===200 && response.statusText==="OK"){
+        const response = await fetch(`${baseAPIURL}/text`,{method:"post", body: JSON.stringify(payload), credentials:"include", headers: {"Content-Type": "application/json"}})
+        if (response.status===200){
           result = await response.json()
           console.log(`generated text:${JSON.stringify(result)}`)
-          setText(result.data)
+          // setText(result.data)
         } else {
           console.error(`generating text failed with status:${response.status} - ${response.statusText}`)
         }
@@ -186,8 +177,8 @@ export default function OrgChartTree() {
       console.log(`text to store:${textPayload.text}`);
 
       try{            
-        const response = await fetch(`http://localhost:9000/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
-        if (response.status===200 && response.statusText==="OK"){
+        const response = await fetch(`${baseAPIURL}/story/?parent_id=${parent_id}`,{method:"post", body: JSON.stringify(textPayload), credentials:"include", headers: {"Content-Type": "application/json"}})
+        if (response.status===200){
           console.log("save text to db")
           const result = await response.json()
           console.log(`returned text: ${JSON.stringify(result)}`)
@@ -217,7 +208,7 @@ export default function OrgChartTree() {
     const handleNodeClick = async (nodeDatum) => {
       if (!nodeDatum.children){
         setIsBackgroundDim(true)
-        setStatus("thinking")
+        // setStatus("thinking")
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
         await tryGetStoryTree()
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
@@ -225,7 +216,7 @@ export default function OrgChartTree() {
         await tryGetText(nodeDatum._id,nodeDatum.attributes.text)
         await tryGetStoryTree()
         setIsBackgroundDim(false)
-        setStatus("")
+        // setStatus("")
       }
     }
 
@@ -238,7 +229,7 @@ export default function OrgChartTree() {
   return (
     // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
     <StoryTreeContext.Provider value={storyTree}>
-    <div style={{height: "40vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
+    <div style={{height: "55vh"}} ref={containerRef} className={isBackgroundDim ? 'background-grey' : 'background-white'}>
       <Tree data={storyTree}
       orientation="vertical" 
       rootNodeClassName="node_root"

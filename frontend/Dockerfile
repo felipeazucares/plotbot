@@ -1,0 +1,9 @@
+FROM node:16.13.2-alpine3.14
+WORKDIR /code/
+# copy all the code across
+COPY . /code
+# copy across the docker version of the .env file  so we connect to containerised redis 
+EXPOSE 3000
+ENV REACT_APP_BASEAPIURL=https://api-felipeazucares.cloud.okteto.net
+RUN npm install
+CMD ["npm","start"]

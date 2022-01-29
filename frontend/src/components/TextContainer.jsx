@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect} from "react"
-import { StoryTreeContext,StoryTextContext,UserContext } from "../App"
-import { Container } from '@chakra-ui/react'
+import { StoryTreeContext,StoryTextContext,URLContext, UserContext} from "../App"
 
 export default function TextContainer() {
     const {storyText, setStoryText} = useContext(StoryTextContext)
-    const {storyTree, setStoryTree} = useContext(StoryTreeContext)
+    const {storyTree} = useContext(StoryTreeContext)
+    const {baseAPIURL} = useContext(URLContext)
 
     // go and get the story from the API
     
@@ -12,6 +12,12 @@ export default function TextContainer() {
     const [username, setUsername] = useState("")
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const {user,setUser} = useContext(UserContext)
+
+    // go and get the story from the API
+    // const [password, setPassword] = useState("")
+
+    // const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // const {user,setUser} = useContext(UserContext)
     
     useEffect(() => {
 
@@ -32,10 +38,12 @@ export default function TextContainer() {
         formData.append("username","unittestuser")
         formData.append("password","don't look now")
         try{            
-            const response = await fetch("http://localhost:9000/login",{method:"POST", body: formData, credentials:"include"})
-            if (response.status===200 && response.statusText==="OK"){
+            const response = await fetch(`${baseAPIURL}/login`,{method:"POST", body: formData, credentials:"include"})
+            if (response.status===200){
                 console.log("logged in successfully")
+                console.log("setting status")
                 setIsLoggedIn(true)
+                console.log("setting user")
                 setUser(username)
                 
             } else {
@@ -50,17 +58,16 @@ export default function TextContainer() {
         
 
         try{            
-            const response = await fetch("http://localhost:9000/text",
-                {
+            const response = await fetch(`${baseAPIURL}/text`,
+            {
                     credentials:"include"
                  })
-            if (response.status===200 && response.statusText==="OK"){
+            if (response.status===200){
                 const result = await response.json()
-                console.log(`storyText:${JSON.stringify(result.data.text)}`)
                 setStoryText(result.data.text)
 
             } else {
-                console.error(`get /text failed with status:${response.status} - ${response.statusText}`)
+                console.error(`Get ${baseAPIURL}/text failed with status:${response.status} - ${response.statusText}`)
             }
         }
         catch(error){
@@ -68,10 +75,10 @@ export default function TextContainer() {
         }
     }
 
-    tryGetStoryText()},[setStoryText,storyTree,setUser,username]);    
+    tryGetStoryText()},[baseAPIURL,setStoryText,storyTree,username,setUser]);    
 
 return (
-    <div style={{height: "40vh"}} >
+    <div style={{height: "55vh"}} >
         {storyText}
     </div>
   );

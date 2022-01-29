@@ -84,23 +84,24 @@ console_display = ConsoleDisplay()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:9000",
         "http://localhost",
-        "http://localhost:9000/",
-        "http://127.0.0.1:9000",
         "http://localhost:3000",
-        "localhost:3000",
+        "http://localhost/",
         "http://localhost:3000/",
-        "127.0.0.1:300",
+        "localhost:3000",
+        "127.0.0.1:3000",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3000/",
+        "https://ui-felipeazucares.cloud.okteto.net",
+        "https://ui-felipeazucares.cloud.okteto.net/",
+        "https://ui-felipeazucares.cloud.okteto.net:3000",
+        "https://ui-felipeazucares.cloud.okteto.net:3000/",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
     expose_headers=["set.cookie"],
 )
-
 oauth = Authentication()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
