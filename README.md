@@ -1,7 +1,7 @@
 # Hairy Plotter
 
 DEV.TO Hackathon Project - interactive fiction generation using the FARM stack: fastAPI, aitextgen library, MongoDB Atlas and React.
-My submission to the MongoDB Atlas Hackathon on DEV.
+My submission to the MongoDB Atlas Hackathon on DEV. Built in three weeks between 20/12/21 and 13/1/22.
 
 ---
 
